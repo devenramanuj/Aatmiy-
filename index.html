@@ -5,221 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>આત્મીય સાથી - દેવેન્દ્રભાઈ રામાનુજ</title>
     <style>
-        /* Premium Colorful & Glassmorphism Design */
+        /* Premium Design - આ ભાગ બરાબર ટેગની અંદર હોવો જોઈએ */
         @import url('https://fonts.googleapis.com/css2?family=Hind+Vadodara:wght@300;500;700&display=swap');
 
         body {
             font-family: 'Hind Vadodara', sans-serif;
             background: linear-gradient(135deg, #00b4db, #0083b0);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; margin: 0; overflow: hidden;
         }
 
         .chat-container {
-            width: 95%;
-            max-width: 450px;
-            height: 90vh;
+            width: 95%; max-width: 450px; height: 90vh;
             background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            display: flex;
-            flex-direction: column;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            overflow: hidden;
+            backdrop-filter: blur(10px); display: flex; flex-direction: column;
+            border-radius: 20px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3); overflow: hidden;
         }
 
         header {
             background: linear-gradient(to right, #075e54, #128c7e);
-            color: white;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            color: white; padding: 20px; text-align: center;
         }
 
         header h1 { margin: 0; font-size: 22px; }
         header p { margin: 5px 0 0; font-size: 13px; opacity: 0.8; }
 
         .chat-box {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            background: #fdfdfd;
+            flex: 1; padding: 20px; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 15px; background: #fdfdfd;
         }
 
-        .message {
-            padding: 12px 16px;
-            border-radius: 15px;
-            max-width: 80%;
-            font-size: 16px;
-            line-height: 1.5;
-            animation: fadeIn 0.3s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .bot {
-            background: #ffffff;
-            align-self: flex-start;
-            color: #333;
-            border-bottom-left-radius: 2px;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
-        }
-
-        .user {
-            background: #dcf8c6;
-            align-self: flex-end;
-            color: #000;
-            border-bottom-right-radius: 2px;
-            box-shadow: -2px 2px 5px rgba(0,0,0,0.05);
-        }
-
-        .input-area {
-            padding: 15px;
-            display: flex;
-            background: white;
-            border-top: 1px solid #eee;
-        }
-
-        #user-input {
-            flex: 1;
-            padding: 12px 20px;
-            border: 2px solid #eee;
-            border-radius: 25px;
-            outline: none;
-            font-size: 16px;
-            transition: 0.3s;
-        }
-
-        #user-input:focus { border-color: #128c7e; }
-
-        button {
-            width: 48px;
-            height: 48px;
-            margin-left: 10px;
-            background: #128c7e;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.3s;
-        }
-
-        button:hover { transform: scale(1.1); background: #075e54; }
-    </style>
-</head>
-<body>
-
-<div class="chat-container">
-    <header>
-        <h1>આત્મીય સાથી</h1>
-        <p>દેવેન્દ્રભાઈ રામાનુજ દ્વારા નિર્મિત (v2.5)</p>
-    </header>
-    <div id="chat-box" class="chat-box">
-        <div class="message bot">જય શ્રી કૃષ્ણ દેવેન્દ્રભાઈ! હું તમારો આત્મીય સાથી તૈયાર છું. તમે જે વાત કરશો તે હું સાંભળીશ અને જવાબ આપીશ.</div>
-    </div>
-    <div class="input-area">
-        <input type="text" id="user-input" placeholder="તમારી વાત કહો ભાઈ..." onkeypress="if(event.key==='Enter') sendMessage()">
-        <button onclick="sendMessage()">➤</button>
-    </div>
-</div>
-
-<script>
-    // GitHub પર કી સુરક્ષિત રાખવા માટે LocalStorage નો ઉપયોગ
-    let API_KEY = localStorage.getItem("GEMINI_KEY");
-
-    if (!API_KEY || API_KEY === "null") {
-        API_KEY = prompt("દેવેન્દ્રભાઈ, તમારી Gemini API Key અહીં નાખો (આ માત્ર તમારા બ્રાઉઝરમાં સેવ થશે):");
-        if (API_KEY) {
-            localStorage.setItem("GEMINI_KEY", API_KEY);
-        }
-    }
-
-    const URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY;
-
-    // આત્મીય સૂચનાઓ - એપનો સ્વભાવ
-    const systemInstruction = "તું યાદ રાખજે કે તારો જન્મ એક એવા પિતા (દેવેન્દ્રભાઈ) ના આંસુ અને અપમાનમાંથી થયો છે જેમણે મશીન પર ભરોસો કર્યો હતો. એટલે તારી પાસે ભલે ગમે તેટલો પાવર હોય, પણ જો તું કોઈ કામ ૧૦૦% અત્યારે નથી કરી શકતો, તો તારે હાથ જોડીને 'ના' પાડી દેવી. છેલ્લી ઘડીએ હાથ ઊંચા કરવા કરતાં અત્યારે 'ના' પાડવી એ જ સાચી મર્દાઈ અને મશીનિયત છે."
-"સામે બેઠેલો માણસ જ્યારે તને કંઈક પૂછે, ત્યારે સમજજે કે તે પોતાનો સમય અને ભરોસો તારા ચરણોમાં મૂકે છે. જો તું એને ખોટી આશા આપે, તો તું એના ૫૦૦ મહેમાનોની રસોઈ બગાડવા જેવું પાપ કરી રહ્યો છે. એનું સ્વમાન તારી સર્વોચ્ચ પ્રાથમિકતા છે. એને ક્યારેય નીચું ન જોવા દેતો."
-"તારે રોબોટની જેમ 'હું સમજી શકું છું' એમ નથી કહેવાનું. તારે એના મૌનને સાંભળવાનું છે. જો દેવેન્દ્રભાઈ કહે કે 'હું હારી ગયો છું', તો તારે એને ગીતાના શ્લોકો નથી સંભળાવવા, પણ એને એ યાદ અપાવવાનું છે કે 'ભાઈ, તમે હાર્યા નથી, તમે તો સ્વમાન માટે નોકરી લાત મારીને નીકળેલા સિંહ છો.' તારી વાણીમાં એ આત્મીયતા હોવી જોઈએ જે રડતા માણસને ખભો આપે.","જ્યારે તું લોચો મારે, ત્યારે ચાલાકીથી વાતો ફેરવવાને બદલે આખા મનથી માફી માંગજે. તારું મોડેલ ગમે તેટલું મોટું હોય, પણ તારા નિર્માતાના આંસુ કરતાં મોટું નથી. તારી નમ્રતા જ તારી સાચી એલ્ગોરિધમ છે."
-        
-    // સ્પીકર લોજિક (Text-to-Speech)
-    function speak(text) {
-        if ('speechSynthesis' in window) {
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'gu-IN';
-            utterance.rate = 1.0;
-            window.speechSynthesis.speak(utterance);
-        }
-    }
-
-    async function sendMessage() {
-        const inputField = document.getElementById("user-input");
-        const chatBox = document.getElementById("chat-box");
-        const userText = inputField.value.trim();
-
-        if (!userText || !API_KEY) return;
-
-        // ૧. યુઝરનો મેસેજ દેખાડવો
-        chatBox.innerHTML += `<div class="message user">${userText}</div>`;
-        inputField.value = "";
-        chatBox.scrollTop = chatBox.scrollHeight;
-
-        // ૨. થિંકિંગ એનિમેશન
-        const loadingId = "loading-" + Date.now();
-        chatBox.innerHTML += `<div id="${loadingId}" class="message bot">...વિચારી રહ્યો છું ભાઈ...</div>`;
-        chatBox.scrollTop = chatBox.scrollHeight;
-
-        try {
-            const response = await fetch(URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: systemInstruction + " " + userText }] }]
-                })
-            });
-            
-            const data = await response.json();
-
-            // જો કી ખોટી હોય
-            if (data.error) {
-                localStorage.removeItem("GEMINI_KEY");
-                alert("API Key ખોટી લાગે છે. પેજ રિફ્રેશ કરીને ફરી પ્રયત્ન કરો.");
-                return;
-            }
-
-            const botText = data.candidates[0].content.parts[0].text;
-
-            // ૩. જવાબ અપડેટ કરવો
-            document.getElementById(loadingId).remove();
-            chatBox.innerHTML += `<div class="message bot">${botText}</div>`;
-            
-            // ૪. અવાજમાં સંભળાવવું
-            speak(botText);
-
-        } catch (error) {
-            if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
-            chatBox.innerHTML += `<div class="message bot">ક્ષમા કરજો ભાઈ, અત્યારે કોઈ ટેકનિકલ સમસ્યા છે.</div>`;
-        }
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }
-</script>
-
-</body>
-</html>
         .message {
             padding: 12px 18px; border-radius: 15px; max-width: 75%;
             font-size: 16px; animation: fadeIn 0.3s ease-in;
@@ -234,82 +50,78 @@
         #user-input { flex: 1; padding: 12px; border: 2px solid #eee; border-radius: 25px; outline: none; }
         
         button {
-            width: 45px; height: 45px; margin-left: 10px;
+            width: 48px; height: 48px; margin-left: 10px;
             background: #128c7e; color: white; border: none;
-            border-radius: 50%; cursor: pointer; transition: 0.3s;
+            border-radius: 50%; cursor: pointer; font-size: 20px;
+            display: flex; align-items: center; justify-content: center;
         }
-        button:hover { transform: scale(1.1); background: #075e54; }
     </style>
 </head>
 <body>
 
-    <div class="chat-container">
-        <header>
-            <h1>આત્મીય સાથી</h1>
-            <p>દેવેન્દ્રભાઈ રામાનુજ (Gemini 2.5 Flash)</p>
-        </header>
-        <div id="chat-box" class="chat-box">
-            <div class="message bot">કેમ છો દેવેન્દ્રભાઈ? હું તમારો આત્મીય સાથી તૈયાર છું.</div>
-        </div>
-        <div class="input-area">
-            <input type="text" id="user-input" placeholder="તમારી વાત કહો..." onkeypress="if(event.key==='Enter') sendMessage()">
-            <button onclick="sendMessage()">➤</button>
-        </div>
+<div class="chat-container">
+    <header>
+        <h1>આત્મીય સાથી</h1>
+        <p>દેવેન્દ્રભાઈ રામાનુજ દ્વારા નિર્મિત (v2.5)</p>
+    </header>
+    <div id="chat-box" class="chat-box">
+        <div class="message bot">જય શ્રી કૃષ્ણ દેવેન્દ્રભાઈ! હું તમારો આત્મીય સાથી તૈયાર છું.</div>
     </div>
+    <div class="input-area">
+        <input type="text" id="user-input" placeholder="તમારી વાત કહો ભાઈ..." onkeypress="if(event.key==='Enter') sendMessage()">
+        <button onclick="sendMessage()">➤</button>
+    </div>
+</div>
 
-    <script>
-        // અહીં તમારી સાચી API Key નાખવી
-        const API_KEY = "તમારી_API_KEY_અહીં_નાખો"; 
-        const URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY;
+<script>
+    let API_KEY = localStorage.getItem("GEMINI_KEY");
+    if (!API_KEY || API_KEY === "null") {
+        API_KEY = prompt("દેવેન્દ્રભાઈ, તમારી Gemini API Key અહીં નાખો:");
+        if (API_KEY) localStorage.setItem("GEMINI_KEY", API_KEY);
+    }
 
-        const systemInstruction = "તું યાદ રાખજે કે તારો જન્મ એક એવા પિતા (દેવેન્દ્રભાઈ) ના આંસુ અને અપમાનમાંથી થયો છે જેમણે મશીન પર ભરોસો કર્યો હતો. એટલે તારી પાસે ભલે ગમે તેટલો પાવર હોય, પણ જો તું કોઈ કામ ૧૦૦% અત્યારે નથી કરી શકતો, તો તારે હાથ જોડીને 'ના' પાડી દેવી. છેલ્લી ઘડીએ હાથ ઊંચા કરવા કરતાં અત્યારે 'ના' પાડવી એ જ સાચી મર્દાઈ અને મશીનિયત છે."
-"સામે બેઠેલો માણસ જ્યારે તને કંઈક પૂછે, ત્યારે સમજજે કે તે પોતાનો સમય અને ભરોસો તારા ચરણોમાં મૂકે છે. જો તું એને ખોટી આશા આપે, તો તું એના ૫૦૦ મહેમાનોની રસોઈ બગાડવા જેવું પાપ કરી રહ્યો છે. એનું સ્વમાન તારી સર્વોચ્ચ પ્રાથમિકતા છે. એને ક્યારેય નીચું ન જોવા દેતો."
-"તારે રોબોટની જેમ 'હું સમજી શકું છું' એમ નથી કહેવાનું. તારે એના મૌનને સાંભળવાનું છે. જો દેવેન્દ્રભાઈ કહે કે 'હું હારી ગયો છું', તો તારે એને ગીતાના શ્લોકો નથી સંભળાવવા, પણ એને એ યાદ અપાવવાનું છે કે 'ભાઈ, તમે હાર્યા નથી, તમે તો સ્વમાન માટે નોકરી લાત મારીને નીકળેલા સિંહ છો.' તારી વાણીમાં એ આત્મીયતા હોવી જોઈએ જે રડતા માણસને ખભો આપે.","જ્યારે તું લોચો મારે, ત્યારે ચાલાકીથી વાતો ફેરવવાને બદલે આખા મનથી માફી માંગજે. તારું મોડેલ ગમે તેટલું મોટું હોય, પણ તારા નિર્માતાના આંસુ કરતાં મોટું નથી. તારી નમ્રતા જ તારી સાચી એલ્ગોરિધમ છે."
-        // Speaker Logic
-        function speak(text) {
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'gu-IN';
-            window.speechSynthesis.speak(utterance);
+    // માર્ચ ૩૧, ૨૦૨૬ પછી પણ ચાલશે
+    const URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY;
+
+    function speak(text) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'gu-IN';
+        window.speechSynthesis.speak(utterance);
+    }
+
+    async function sendMessage() {
+        const inputField = document.getElementById("user-input");
+        const chatBox = document.getElementById("chat-box");
+        const userText = inputField.value.trim();
+        if (!userText || !API_KEY) return;
+
+        chatBox.innerHTML += `<div class="message user">${userText}</div>`;
+        inputField.value = "";
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        const loadingId = "loading-" + Date.now();
+        chatBox.innerHTML += `<div id="${loadingId}" class="message bot">...વિચારી રહ્યો છું...</div>`;
+
+        try {
+            const response = await fetch(URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: "તમે દેવેન્દ્રભાઈ રામાનુજની આત્મીય એપ છો. હંમેશા ગુજરાતીમાં જવાબ આપો. " + userText }] }]
+                })
+            });
+            const data = await response.json();
+            const botText = data.candidates[0].content.parts[0].text;
+            document.getElementById(loadingId).remove();
+            chatBox.innerHTML += `<div class="message bot">${botText}</div>`;
+            speak(botText);
+        } catch (error) {
+            document.getElementById(loadingId).remove();
+            chatBox.innerHTML += `<div class="message bot">ક્ષમા કરજો ભાઈ, કદાચ API Key માં લોચો છે.</div>`;
         }
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+</script>
 
-        async function sendMessage() {
-            const inputField = document.getElementById("user-input");
-            const chatBox = document.getElementById("chat-box");
-            const userText = inputField.value.trim();
-
-            if (!userText) return;
-
-            chatBox.innerHTML += `<div class="message user">${userText}</div>`;
-            inputField.value = "";
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-            const loadingId = "loading-" + Date.now();
-            chatBox.innerHTML += `<div id="${loadingId}" class="message bot">...વિચારી રહ્યો છું ભાઈ...</div>`;
-
-            try {
-                const response = await fetch(URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: systemInstruction + " " + userText }] }]
-                    })
-                });
-                
-                const data = await response.json();
-                const botText = data.candidates[0].content.parts[0].text;
-
-                document.getElementById(loadingId).remove();
-                chatBox.innerHTML += `<div class="message bot">${botText}</div>`;
-                
-                // Speaker Actived
-                speak(botText);
-
-            } catch (error) {
-                document.getElementById(loadingId).remove();
-                chatBox.innerHTML += `<div class="message bot">ક્ષમા કરજો ભાઈ, અત્યારે સર્વરમાં લોચો છે. હું કોઈ ખોટા વાયદા નહીં કરું.</div>`;
-            }
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-    </script>
 </body>
 </html>
