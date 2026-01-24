@@ -94,10 +94,17 @@
     const URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY;
 
     function speak(text) {
-        const utterance = new SpeechSynthesisUtterance(text);
+    if ('speechSynthesis' in window) {
+        // આ લાઈન બધા જ ચિન્હો (Special Characters) ને બોલતા પહેલા હટાવી દેશે
+        let cleanText = text.replace(/[*#_~-]/g, ''); 
+
+        const utterance = new SpeechSynthesisUtterance(cleanText);
         utterance.lang = 'gu-IN';
+        utterance.rate = 1.0;
         window.speechSynthesis.speak(utterance);
     }
+}
+
 
     async function sendMessage() {
         const inputField = document.getElementById("user-input");
