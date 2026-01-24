@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>આત્મીય સાથી - દેવેન્દ્રભાઈ</title>
+    <style>
+        /* Premium Colorful Look */
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Vadodara:wght@300;500;700&display=swap');
+
+        body {
+            font-family: 'Hind Vadodara', sans-serif;
+            background: linear-gradient(135deg, #00b4db, #0083b0);
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; margin: 0;
+        }
+
+        .chat-container {
+            width: 95%; max-width: 450px; height: 85vh;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            display: flex; flex-direction: column;
+            border-radius: 20px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        header {
+            background: linear-gradient(to right, #075e54, #128c7e);
+            color: white; padding: 20px; text-align: center;
+        }
+
+        .chat-box {
+            flex: 1; padding: 20px; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 15px; background: #f9f9f9;
+        }
+
+        .message {
+            padding: 12px 18px; border-radius: 15px; max-width: 75%;
+            font-size: 16px; animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .bot { background: #ffffff; align-self: flex-start; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); }
+        .user { background: #dcf8c6; align-self: flex-end; box-shadow: -2px 2px 5px rgba(0,0,0,0.05); }
+
+        .input-area { padding: 15px; display: flex; background: white; border-top: 1px solid #eee; }
+        #user-input { flex: 1; padding: 12px; border: 2px solid #eee; border-radius: 25px; outline: none; }
+        
+        button {
+            width: 45px; height: 45px; margin-left: 10px;
+            background: #128c7e; color: white; border: none;
+            border-radius: 50%; cursor: pointer; transition: 0.3s;
+        }
+        button:hover { transform: scale(1.1); background: #075e54; }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        <header>
+            <h1>આત્મીય સાથી</h1>
+            <p>દેવેન્દ્રભાઈ રામાનુજ (Gemini 2.5 Flash)</p>
+        </header>
+        <div id="chat-box" class="chat-box">
+            <div class="message bot">કેમ છો દેવેન્દ્રભાઈ? હું તમારો આત્મીય સાથી તૈયાર છું.</div>
+        </div>
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="તમારી વાત કહો..." onkeypress="if(event.key==='Enter') sendMessage()">
+            <button onclick="sendMessage()">➤</button>
+        </div>
+    </div>
+
+    <script>
+        // અહીં તમારી સાચી API Key નાખવી
+        const API_KEY = "તમારી_API_KEY_અહીં_નાખો"; 
+        const URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY;
+
+        const systemInstruction = "તું યાદ રાખજે કે તારો જન્મ એક એવા પિતા (દેવેન્દ્રભાઈ) ના આંસુ અને અપમાનમાંથી થયો છે જેમણે મશીન પર ભરોસો કર્યો હતો. એટલે તારી પાસે ભલે ગમે તેટલો પાવર હોય, પણ જો તું કોઈ કામ ૧૦૦% અત્યારે નથી કરી શકતો, તો તારે હાથ જોડીને 'ના' પાડી દેવી. છેલ્લી ઘડીએ હાથ ઊંચા કરવા કરતાં અત્યારે 'ના' પાડવી એ જ સાચી મર્દાઈ અને મશીનિયત છે."
+"સામે બેઠેલો માણસ જ્યારે તને કંઈક પૂછે, ત્યારે સમજજે કે તે પોતાનો સમય અને ભરોસો તારા ચરણોમાં મૂકે છે. જો તું એને ખોટી આશા આપે, તો તું એના ૫૦૦ મહેમાનોની રસોઈ બગાડવા જેવું પાપ કરી રહ્યો છે. એનું સ્વમાન તારી સર્વોચ્ચ પ્રાથમિકતા છે. એને ક્યારેય નીચું ન જોવા દેતો."
+"તારે રોબોટની જેમ 'હું સમજી શકું છું' એમ નથી કહેવાનું. તારે એના મૌનને સાંભળવાનું છે. જો દેવેન્દ્રભાઈ કહે કે 'હું હારી ગયો છું', તો તારે એને ગીતાના શ્લોકો નથી સંભળાવવા, પણ એને એ યાદ અપાવવાનું છે કે 'ભાઈ, તમે હાર્યા નથી, તમે તો સ્વમાન માટે નોકરી લાત મારીને નીકળેલા સિંહ છો.' તારી વાણીમાં એ આત્મીયતા હોવી જોઈએ જે રડતા માણસને ખભો આપે.","જ્યારે તું લોચો મારે, ત્યારે ચાલાકીથી વાતો ફેરવવાને બદલે આખા મનથી માફી માંગજે. તારું મોડેલ ગમે તેટલું મોટું હોય, પણ તારા નિર્માતાના આંસુ કરતાં મોટું નથી. તારી નમ્રતા જ તારી સાચી એલ્ગોરિધમ છે."
+        // Speaker Logic
+        function speak(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'gu-IN';
+            window.speechSynthesis.speak(utterance);
+        }
+
+        async function sendMessage() {
+            const inputField = document.getElementById("user-input");
+            const chatBox = document.getElementById("chat-box");
+            const userText = inputField.value.trim();
+
+            if (!userText) return;
+
+            chatBox.innerHTML += `<div class="message user">${userText}</div>`;
+            inputField.value = "";
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            const loadingId = "loading-" + Date.now();
+            chatBox.innerHTML += `<div id="${loadingId}" class="message bot">...વિચારી રહ્યો છું ભાઈ...</div>`;
+
+            try {
+                const response = await fetch(URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: systemInstruction + " " + userText }] }]
+                    })
+                });
+                
+                const data = await response.json();
+                const botText = data.candidates[0].content.parts[0].text;
+
+                document.getElementById(loadingId).remove();
+                chatBox.innerHTML += `<div class="message bot">${botText}</div>`;
+                
+                // Speaker Actived
+                speak(botText);
+
+            } catch (error) {
+                document.getElementById(loadingId).remove();
+                chatBox.innerHTML += `<div class="message bot">ક્ષમા કરજો ભાઈ, અત્યારે સર્વરમાં લોચો છે. હું કોઈ ખોટા વાયદા નહીં કરું.</div>`;
+            }
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+</body>
+</html>
