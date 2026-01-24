@@ -94,11 +94,12 @@
     const URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY;
 
     function speak(text) {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'gu-IN';
-        window.speechSynthesis.speak(utterance);
-    }
-
+        if ('speechSynthesis' in window) {
+            let cleanText = text.replace(/[*#_~-]/g, ''); 
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = 'gu-IN';
+            window.speechSynthesis.speak(utterance);
+        }
     async function sendMessage() {
         const inputField = document.getElementById("user-input");
         const chatBox = document.getElementById("chat-box");
