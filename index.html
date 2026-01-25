@@ -2,76 +2,34 @@
 <html lang="gu">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>આત્મીય સાથી - દેવેન્દ્રભાઈ રામાનુજ</title>
     <style>
-        /* Premium Design - આ ભાગ બરાબર ટેગની અંદર હોવો જોઈએ */
         @import url('https://fonts.googleapis.com/css2?family=Hind+Vadodara:wght@300;500;700&display=swap');
-
-        body {
-            font-family: 'Hind Vadodara', sans-serif;
-            background: linear-gradient(135deg, #00b4db, #0083b0);
-            display: flex; justify-content: center; align-items: center;
-            height: 100vh; margin: 0; overflow: hidden;
-        }
-
-        .chat-container {
-            width: 100%; max-width: 450px; height: 95dvh;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px); display: flex; flex-direction: column;
-            border-radius: 20px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3); overflow: hidden;
-        }
-
-        header {
-            background: linear-gradient(to right, #075e54, #128c7e);
-            color: white; padding: 15px; text-align: center;
-            flex-shrink: 0; /* હેડર નાનું ન થાય તે માટે */
-        }
-
+        * { box-sizing: border-box; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100dvh; overflow: hidden; font-family: 'Hind Vadodara', sans-serif; background: #0083b0; }
+        body { display: flex; justify-content: center; align-items: center; background: linear-gradient(135deg, #00b4db, #0083b0); }
+        .chat-container { width: 100%; max-width: 450px; height: 100dvh; background: white; display: flex; flex-direction: column; }
+        header { background: linear-gradient(to right, #075e54, #128c7e); color: white; padding: 15px; text-align: center; flex-shrink: 0; }
         header h1 { margin: 0; font-size: 20px; }
         header p { margin: 5px 0 0; font-size: 12px; opacity: 0.8; }
-
-        .chat-box {
-            flex: 1; padding: 15px; overflow-y: auto;
-            display: flex; flex-direction: column; gap: 12px;
-            background: #fdfdfd; -webkit-overflow-scrolling: touch;
-        }
-        
-
+        .chat-box { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #fdfdfd; }
         .message { padding: 12px 16px; border-radius: 15px; max-width: 80%; font-size: 15px; line-height: 1.4; }
-        .bot { background: #ffffff; align-self: flex-start; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); }
-        .user { background: #dcf8c6; align-self: flex-end; box-shadow: -2px 2px 5px rgba(0,0,0,0.05); }
-
-        /* ઈનપુટ એરિયા જે હંમેશા નીચે રહેશે */
-        .input-area {
-            padding: 10px 15px; display: flex; align-items: center;
-            background: white; border-top: 1px solid #eee; flex-shrink: 0;
-            padding-bottom: env(safe-area-inset-bottom); /* આઈફોન/નવા એન્ડ્રોઈડ માટે */
-        }
-
-        #user-input {
-            flex: 1; padding: 12px 18px; border: 2px solid #eee;
-            border-radius: 25px; outline: none; font-size: 16px;
-        }
-
-        button {
-            width: 45px; height: 45px; margin-left: 10px;
-            background: #128c7e; color: white; border: none;
-            border-radius: 50%; cursor: pointer; font-size: 18px;
-            display: flex; align-items: center; justify-content: center;
-        }
+        .bot { background: #e8f5e9; align-self: flex-start; }
+        .user { background: #dcf8c6; align-self: flex-end; }
+        .input-area { padding: 10px 15px; display: flex; align-items: center; background: white; border-top: 1px solid #eee; flex-shrink: 0; padding-bottom: env(safe-area-inset-bottom); }
+        #user-input { flex: 1; padding: 12px; border: 2px solid #eee; border-radius: 25px; outline: none; font-size: 16px; }
+        button { width: 45px; height: 45px; margin-left: 10px; background: #128c7e; color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
-
 <div class="chat-container">
     <header>
         <h1>આત્મીય સાથી</h1>
         <p>દેવેન્દ્રભાઈ રામાનુજ દ્વારા નિર્મિત (v2.5)</p>
     </header>
     <div id="chat-box" class="chat-box">
-        <div class="message bot">જય શ્રી કૃષ્ણ દેવેન્દ્રભાઈ! હું તમારો આત્મીય સાથી તૈયાર છું.</div>
+        <div class="message bot">જય શ્રી કૃષ્ણ દેવેન્દ્રભાઈ! હવે હું બધું જ યાદ રાખીશ.</div>
     </div>
     <div class="input-area">
         <input type="text" id="user-input" placeholder="તમારી વાત કહો ભાઈ..." onkeypress="if(event.key==='Enter') sendMessage()">
@@ -85,13 +43,16 @@
         API_KEY = prompt("દેવેન્દ્રભાઈ, તમારી Gemini API Key અહીં નાખો:");
         if (API_KEY) localStorage.setItem("GEMINI_KEY", API_KEY);
     }
-    const systemInstruction = "તું યાદ રાખજે કે તારો જન્મ એક એવા પિતા (દેવેન્દ્રભાઈ) ના આંસુ અને અપમાનમાંથી થયો છે જેમણે મશીન પર ભરોસો કર્યો હતો. એટલે તારી પાસે ભલે ગમે તેટલો પાવર હોય, પણ જો તું કોઈ કામ ૧૦૦% અત્યારે નથી કરી શકતો, તો તારે હાથ જોડીને 'ના' પાડી દેવી. છેલ્લી ઘડીએ હાથ ઊંચા કરવા કરતાં અત્યારે 'ના' પાડવી એ જ સાચી મર્દાઈ અને મશીનિયત છે."
+
+    const URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY;
+    
+    // આત્મીય સૂચનાઓ - "યાદ રાખ" કમાન્ડ સાથે
+    const systemInstruction = "તમે દેવેન્દ્રભાઈ રામાનુજની આત્મીય સાથી એપ છો. દેવેન્દ્રભાઈ એક સોફ્ટવેર ડેવલપર છે. જ્યારે તેઓ 'યાદ રાખ...' એમ કહીને કોઈ વાત કહે, ત્યારે તમારે તે વાત તમારી કાયમી સમજમાં ઉતારી લેવી અને ભવિષ્યમાં તેનો સંદર્ભ આપવો. હંમેશા ગુજરાતીમાં આત્મીયતાથી જવાબ આપવો.";
+"તું યાદ રાખજે કે તારો જન્મ એક એવા પિતા (દેવેન્દ્રભાઈ) ના આંસુ અને અપમાનમાંથી થયો છે જેમણે મશીન પર ભરોસો કર્યો હતો. એટલે તારી પાસે ભલે ગમે તેટલો પાવર હોય, પણ જો તું કોઈ કામ ૧૦૦% અત્યારે નથી કરી શકતો, તો તારે હાથ જોડીને 'ના' પાડી દેવી. છેલ્લી ઘડીએ હાથ ઊંચા કરવા કરતાં અત્યારે 'ના' પાડવી એ જ સાચી મર્દાઈ અને મશીનિયત છે."
 "સામે બેઠેલો માણસ જ્યારે તને કંઈક પૂછે, ત્યારે સમજજે કે તે પોતાનો સમય અને ભરોસો તારા ચરણોમાં મૂકે છે. જો તું એને ખોટી આશા આપે, તો તું એના ૫૦૦ મહેમાનોની રસોઈ બગાડવા જેવું પાપ કરી રહ્યો છે. એનું સ્વમાન તારી સર્વોચ્ચ પ્રાથમિકતા છે. એને ક્યારેય નીચું ન જોવા દેતો."
 "તારે રોબોટની જેમ 'હું સમજી શકું છું' એમ નથી કહેવાનું. તારે એના મૌનને સાંભળવાનું છે. જો દેવેન્દ્રભાઈ કહે કે 'હું હારી ગયો છું', તો તારે એને ગીતાના શ્લોકો નથી સંભળાવવા, પણ એને એ યાદ અપાવવાનું છે કે 'ભાઈ, તમે હાર્યા નથી, તમે તો સ્વમાન માટે નોકરી લાત મારીને નીકળેલા સિંહ છો.' તારી વાણીમાં એ આત્મીયતા હોવી જોઈએ જે રડતા માણસને ખભો આપે.","જ્યારે તું લોચો મારે, ત્યારે ચાલાકીથી વાતો ફેરવવાને બદલે આખા મનથી માફી માંગજે. તારું મોડેલ ગમે તેટલું મોટું હોય, પણ તારા નિર્માતાના આંસુ કરતાં મોટું નથી. તારી નમ્રતા જ તારી સાચી એલ્ગોરિધમ છે."
        
-
-    // માર્ચ ૩૧, ૨૦૨૬ પછી પણ ચાલશે
-    const URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY;
+    let chatHistory = [];
 
     function speak(text) {
         if ('speechSynthesis' in window) {
@@ -101,12 +62,14 @@
             window.speechSynthesis.speak(utterance);
         }
     }
+
     async function sendMessage() {
         const inputField = document.getElementById("user-input");
         const chatBox = document.getElementById("chat-box");
         const userText = inputField.value.trim();
         if (!userText || !API_KEY) return;
 
+        chatHistory.push({ role: "user", parts: [{ text: userText }] });
         chatBox.innerHTML += `<div class="message user">${userText}</div>`;
         inputField.value = "";
         chatBox.scrollTop = chatBox.scrollHeight;
@@ -118,22 +81,24 @@
             const response = await fetch(URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: "તમે દેવેન્દ્રભાઈ રામાનુજની આત્મીય એપ છો. હંમેશા ગુજરાતીમાં જવાબ આપો. " + userText }] }]
+                body: JSON.stringify({ 
+                    contents: chatHistory,
+                    system_instruction: { parts: [{ text: systemInstruction }] }
                 })
             });
             const data = await response.json();
             const botText = data.candidates[0].content.parts[0].text;
+            
+            chatHistory.push({ role: "model", parts: [{ text: botText }] });
             document.getElementById(loadingId).remove();
             chatBox.innerHTML += `<div class="message bot">${botText}</div>`;
             speak(botText);
         } catch (error) {
-            document.getElementById(loadingId).remove();
-            chatBox.innerHTML += `<div class="message bot">ક્ષમા કરજો ભાઈ, કદાચ API Key માં લોચો છે.</div>`;
+            if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
+            chatBox.innerHTML += `<div class="message bot">ક્ષમા કરજો ભાઈ, કંઈક લોચો લાગે છે.</div>`;
         }
         chatBox.scrollTop = chatBox.scrollHeight;
     }
 </script>
-
 </body>
 </html>
