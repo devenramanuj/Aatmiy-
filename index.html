@@ -48,7 +48,7 @@
         if (API_KEY) localStorage.setItem("GEMINI_KEY", API_KEY);
     }
 
-    const URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-exp:generateContent?key=" + API_KEY;
+    const URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY;
     const systemInstruction = "તમે દેવેન્દ્રભાઈ રામાનુજની આત્મીય સાથી એપ છો. દેવેન્દ્રભાઈ સોફ્ટવેર ડેવલપર છે. હમેશા ગુજરાતીમાં આત્મીયતાથી જવાબ આપવો. જો કોઈ ટાસ્ક હોય તો તે નોંધી લેવો.";
 
     function clearChat() {
