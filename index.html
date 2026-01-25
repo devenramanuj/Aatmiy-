@@ -10,17 +10,34 @@
         body, html { margin: 0; padding: 0; width: 100%; height: 100dvh; overflow: hidden; font-family: 'Hind Vadodara', sans-serif; background: #0083b0; }
         body { display: flex; justify-content: center; align-items: center; background: linear-gradient(135deg, #00b4db, #0083b0); }
         .chat-container { width: 100%; max-width: 450px; height: 100dvh; background: white; display: flex; flex-direction: column; position: relative; }
-        header { background: linear-gradient(to right, #075e54, #128c7e); color: white; padding: 15px; text-align: center; flex-shrink: 0; }
+        
+        header { 
+            background: linear-gradient(to right, #075e54, #128c7e); 
+            color: white; padding: 15px; text-align: center; 
+            flex-shrink: 0; position: relative; 
+        }
         header h1 { margin: 0; font-size: 20px; }
         header p { margin: 5px 0 0; font-size: 12px; opacity: 0.8; }
+        
+        /* Clear Chat Button Style */
+        .clear-btn {
+            position: absolute; right: 15px; top: 22px;
+            background: rgba(255,255,255,0.2); border: none;
+            color: white; cursor: pointer; border-radius: 50%;
+            width: 32px; height: 32px; font-size: 16px;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.3s;
+        }
+        .clear-btn:hover { background: rgba(255,0,0,0.4); }
+
         .chat-box { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #fdfdfd; }
         .message { padding: 12px 16px; border-radius: 15px; max-width: 80%; font-size: 15px; line-height: 1.4; white-space: pre-wrap; }
         .bot { background: #e8f5e9; align-self: flex-start; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); }
         .user { background: #dcf8c6; align-self: flex-end; box-shadow: -2px 2px 5px rgba(0,0,0,0.05); }
+        
         .input-area { padding: 10px 15px; display: flex; align-items: center; background: white; border-top: 1px solid #eee; flex-shrink: 0; padding-bottom: env(safe-area-inset-bottom); }
         #user-input { flex: 1; padding: 12px; border: 2px solid #eee; border-radius: 25px; outline: none; font-size: 16px; }
-        button { width: 45px; height: 45px; margin-left: 10px; background: #128c7e; color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
-        button:hover { transform: scale(1.1); }
+        .send-btn { width: 45px; height: 45px; margin-left: 10px; background: #128c7e; color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
@@ -28,18 +45,17 @@
 <div class="chat-container">
     <header>
         <h1>આત્મીય સાથી</h1>
-        <p>દેવેન્દ્રભાઈ રામાનુજ - Autonomous Assistant (v2.5)</p>
+        <p>દેવેન્દ્રભાઈ રામાનુજ (v2.5)</p>
+        <button class="clear-btn" onclick="clearChat()" title="ચેટ સાફ કરો">🗑</button>
     </header>
-    <div id="chat-box" class="chat-box">
-        </div>
+    <div id="chat-box" class="chat-box"></div>
     <div class="input-area">
         <input type="text" id="user-input" placeholder="તમારી વાત કહો ભાઈ..." onkeypress="if(event.key==='Enter') sendMessage()">
-        <button onclick="sendMessage()">➤</button>
+        <button class="send-btn" onclick="sendMessage()">➤</button>
     </div>
 </div>
 
 <script>
-    // ૧. ડેટા લોડિંગ
     let API_KEY = localStorage.getItem("GEMINI_KEY");
     let chatHistory = JSON.parse(localStorage.getItem("CHAT_MEMORY")) || [];
     let tasks = JSON.parse(localStorage.getItem("DEV_TASKS")) || [];
@@ -50,26 +66,31 @@
     }
 
     const URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY;
-    
-    // આત્મીય સૂચનાઓ - Autonomous લોજિક સાથે
-    const systemInstruction = "તમે દેવેન્દ્રભાઈ રામાનુજની આત્મીય સાથી એપ છો. દેવેન્દ્રભાઈ સોફ્ટવેર ડેવલપર છે. જ્યારે તેઓ 'યાદ રાખ...' કહે અથવા કોઈ કામની વાત કરે, ત્યારે તે વાત સ્વાયત્ત રીતે નોંધી લેવી. હંમેશા ગુજરાતીમાં આત્મીયતાથી જવાબ આપવો. ક્યારેય ખોટા વાયદા ન કરવા.";
+    const systemInstruction = "તમે દેવેન્દ્રભાઈ રામાનુજની આત્મીય સાથી એપ છો. દેવેન્દ્રભાઈ સોફ્ટવેર ડેવલપર છે. જ્યારે તેઓ 'યાદ રાખ...' કહે અથવા કોઈ કામની વાત કરે, ત્યારે તે સ્વાયત્ત રીતે નોંધી લેવું. હંમેશા ગુજરાતીમાં આત્મીયતાથી જવાબ આપવો.";
 
-    // ૨. ટાસ્ક ટ્રેકર લોજિક
     function updateTaskTracker(text) {
-        const taskKeywords = ["કરવાનું છે", "બાકી છે", "યાદ કરાવજે", "ટાસ્ક", "શીખવાનું છે"];
+        const taskKeywords = ["કરવાનું છે", "બાકી છે", "યાદ કરાવજે", "ટાસ્ક"];
         if (taskKeywords.some(keyword => text.includes(keyword))) {
             tasks.push({ item: text, status: "pending", date: new Date().toLocaleString('gu-IN') });
             localStorage.setItem("DEV_TASKS", JSON.stringify(tasks));
-            return "\n\n(નોંધ: દેવેન્દ્રભાઈ, મેં આ કામ તમારા ટાસ્ક લિસ્ટમાં નોંધી લીધું છે! 😁)";
+            return "\n\n(મેં આ કામ ટાસ્ક લિસ્ટમાં નોંધી લીધું છે!)";
         }
         return "";
     }
 
-    // ૩. પેજ લોડ થતા જૂની વાતો બતાવવી
+    // ચેટ સાફ કરવાનું ફંક્શન
+    function clearChat() {
+        if (confirm("દેવેન્દ્રભાઈ, શું બધી જ જૂની વાતો સાફ કરવી છે?")) {
+            chatHistory = [];
+            localStorage.removeItem("CHAT_MEMORY");
+            document.getElementById("chat-box").innerHTML = `<div class="message bot">ચેટ સાફ થઈ ગઈ છે. બોલો ભાઈ, નવી શું વાત કરવી છે?</div>`;
+        }
+    }
+
     window.onload = () => {
         const chatBox = document.getElementById("chat-box");
         if (chatHistory.length === 0) {
-            chatBox.innerHTML = `<div class="message bot">જય શ્રી કૃષ્ણ દેવેન્દ્રભાઈ! હું તૈયાર છું. આપણે 'Vidushi' કે બીજા કોઈ પ્રોજેક્ટ પર કામ શરૂ કરીએ?</div>`;
+            chatBox.innerHTML = `<div class="message bot">જય શ્રી કૃષ્ણ દેવેન્દ્રભાઈ! હું તૈયાર છું.</div>`;
         } else {
             chatHistory.forEach(msg => {
                 const className = msg.role === "user" ? "user" : "bot";
@@ -88,39 +109,29 @@
         }
     }
 
-    // ૪. મેસેજ મોકલવાનું ફંક્શન
     async function sendMessage() {
         const inputField = document.getElementById("user-input");
         const chatBox = document.getElementById("chat-box");
         const userText = inputField.value.trim();
-        
         if (!userText || !API_KEY) return;
 
-        // Autonomous ટાસ્ક ચેક
         const taskNote = updateTaskTracker(userText);
-
         chatHistory.push({ role: "user", parts: [{ text: userText }] });
         chatBox.innerHTML += `<div class="message user">${userText}</div>`;
         inputField.value = "";
         chatBox.scrollTop = chatBox.scrollHeight;
 
         const loadingId = "loading-" + Date.now();
-        chatBox.innerHTML += `<div id="${loadingId}" class="message bot">...વિચારી રહ્યો છું ભાઈ...</div>`;
+        chatBox.innerHTML += `<div id="${loadingId}" class="message bot">...વિચારી રહ્યો છું...</div>`;
 
         try {
             const response = await fetch(URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ 
-                    contents: chatHistory,
-                    system_instruction: { parts: [{ text: systemInstruction }] }
-                })
+                body: JSON.stringify({ contents: chatHistory, system_instruction: { parts: [{ text: systemInstruction }] } })
             });
             const data = await response.json();
-            let botText = data.candidates[0].content.parts[0].text;
-            
-            // જો ટાસ્ક એડ થયો હોય તો બોટના જવાબમાં ઉમેરો
-            botText += taskNote;
+            let botText = data.candidates[0].content.parts[0].text + taskNote;
 
             chatHistory.push({ role: "model", parts: [{ text: botText }] });
             localStorage.setItem("CHAT_MEMORY", JSON.stringify(chatHistory));
@@ -130,11 +141,10 @@
             speak(botText);
         } catch (error) {
             if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
-            chatBox.innerHTML += `<div class="message bot">ક્ષમા કરજો ભાઈ, અત્યારે કોઈ ટેકનિકલ સમસ્યા છે.</div>`;
+            chatBox.innerHTML += `<div class="message bot">ક્ષમા કરજો ભાઈ, કંઈક લોચો લાગે છે.</div>`;
         }
         chatBox.scrollTop = chatBox.scrollHeight;
     }
 </script>
-
 </body>
 </html>
