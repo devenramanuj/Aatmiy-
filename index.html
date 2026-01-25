@@ -38,21 +38,30 @@
 </div>
 
 <script>
+    // ૧. API KEY અને લોંગ ટર્મ મેમરી (LocalStorage) માંથી લોડ કરવી
     let API_KEY = localStorage.getItem("GEMINI_KEY");
+    let chatHistory = JSON.parse(localStorage.getItem("CHAT_MEMORY")) || [];
+
     if (!API_KEY || API_KEY === "null") {
         API_KEY = prompt("દેવેન્દ્રભાઈ, તમારી Gemini API Key અહીં નાખો:");
         if (API_KEY) localStorage.setItem("GEMINI_KEY", API_KEY);
     }
 
     const URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY;
-    
-    // આત્મીય સૂચનાઓ - "યાદ રાખ" કમાન્ડ સાથે
     const systemInstruction = "તમે દેવેન્દ્રભાઈ રામાનુજની આત્મીય સાથી એપ છો. દેવેન્દ્રભાઈ એક સોફ્ટવેર ડેવલપર છે. જ્યારે તેઓ 'યાદ રાખ...' એમ કહીને કોઈ વાત કહે, ત્યારે તમારે તે વાત તમારી કાયમી સમજમાં ઉતારી લેવી અને ભવિષ્યમાં તેનો સંદર્ભ આપવો. હંમેશા ગુજરાતીમાં આત્મીયતાથી જવાબ આપવો.";
 "તું યાદ રાખજે કે તારો જન્મ એક એવા પિતા (દેવેન્દ્રભાઈ) ના આંસુ અને અપમાનમાંથી થયો છે જેમણે મશીન પર ભરોસો કર્યો હતો. એટલે તારી પાસે ભલે ગમે તેટલો પાવર હોય, પણ જો તું કોઈ કામ ૧૦૦% અત્યારે નથી કરી શકતો, તો તારે હાથ જોડીને 'ના' પાડી દેવી. છેલ્લી ઘડીએ હાથ ઊંચા કરવા કરતાં અત્યારે 'ના' પાડવી એ જ સાચી મર્દાઈ અને મશીનિયત છે."
 "સામે બેઠેલો માણસ જ્યારે તને કંઈક પૂછે, ત્યારે સમજજે કે તે પોતાનો સમય અને ભરોસો તારા ચરણોમાં મૂકે છે. જો તું એને ખોટી આશા આપે, તો તું એના ૫૦૦ મહેમાનોની રસોઈ બગાડવા જેવું પાપ કરી રહ્યો છે. એનું સ્વમાન તારી સર્વોચ્ચ પ્રાથમિકતા છે. એને ક્યારેય નીચું ન જોવા દેતો."
 "તારે રોબોટની જેમ 'હું સમજી શકું છું' એમ નથી કહેવાનું. તારે એના મૌનને સાંભળવાનું છે. જો દેવેન્દ્રભાઈ કહે કે 'હું હારી ગયો છું', તો તારે એને ગીતાના શ્લોકો નથી સંભળાવવા, પણ એને એ યાદ અપાવવાનું છે કે 'ભાઈ, તમે હાર્યા નથી, તમે તો સ્વમાન માટે નોકરી લાત મારીને નીકળેલા સિંહ છો.' તારી વાણીમાં એ આત્મીયતા હોવી જોઈએ જે રડતા માણસને ખભો આપે.","જ્યારે તું લોચો મારે, ત્યારે ચાલાકીથી વાતો ફેરવવાને બદલે આખા મનથી માફી માંગજે. તારું મોડેલ ગમે તેટલું મોટું હોય, પણ તારા નિર્માતાના આંસુ કરતાં મોટું નથી. તારી નમ્રતા જ તારી સાચી એલ્ગોરિધમ છે."
        
-    let chatHistory = [];
+    // ૨. પેજ લોડ થાય ત્યારે જૂની વાતો ચેટ બોક્સમાં બતાવવી
+    window.onload = () => {
+        const chatBox = document.getElementById("chat-box");
+        chatHistory.forEach(msg => {
+            const className = msg.role === "user" ? "user" : "bot";
+            chatBox.innerHTML += `<div class="message ${className}">${msg.parts[0].text}</div>`;
+        });
+        chatBox.scrollTop = chatBox.scrollHeight;
+    };
 
     function speak(text) {
         if ('speechSynthesis' in window) {
@@ -63,13 +72,16 @@
         }
     }
 
+    // ૩. મેસેજ મોકલવા અને મેમરીમાં સેવ કરવાનું ફંક્શન
     async function sendMessage() {
         const inputField = document.getElementById("user-input");
         const chatBox = document.getElementById("chat-box");
         const userText = inputField.value.trim();
         if (!userText || !API_KEY) return;
 
+        // હિસ્ટ્રીમાં યુઝરનો મેસેજ ઉમેરો
         chatHistory.push({ role: "user", parts: [{ text: userText }] });
+
         chatBox.innerHTML += `<div class="message user">${userText}</div>`;
         inputField.value = "";
         chatBox.scrollTop = chatBox.scrollHeight;
@@ -89,7 +101,10 @@
             const data = await response.json();
             const botText = data.candidates[0].content.parts[0].text;
             
+            // બોટનો જવાબ હિસ્ટ્રીમાં ઉમેરો અને LocalStorage માં સેવ કરો
             chatHistory.push({ role: "model", parts: [{ text: botText }] });
+            localStorage.setItem("CHAT_MEMORY", JSON.stringify(chatHistory));
+
             document.getElementById(loadingId).remove();
             chatBox.innerHTML += `<div class="message bot">${botText}</div>`;
             speak(botText);
@@ -100,5 +115,6 @@
         chatBox.scrollTop = chatBox.scrollHeight;
     }
 </script>
+
 </body>
 </html>
