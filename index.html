@@ -10,14 +10,31 @@
         body, html { margin: 0; padding: 0; width: 100%; height: 100dvh; overflow: hidden; font-family: 'Hind Vadodara', sans-serif; background: #0083b0; }
         body { display: flex; justify-content: center; align-items: center; background: linear-gradient(135deg, #00b4db, #0083b0); }
         .chat-container { width: 100%; max-width: 450px; height: 100dvh; background: white; display: flex; flex-direction: column; position: relative; }
-        header { background: linear-gradient(to right, #075e54, #128c7e); color: white; padding: 15px; text-align: center; flex-shrink: 0; position: relative; }
+        
+        header { 
+            background: linear-gradient(to right, #075e54, #128c7e); 
+            color: white; padding: 15px; text-align: center; 
+            flex-shrink: 0; position: relative; 
+        }
         header h1 { margin: 0; font-size: 20px; }
         header p { margin: 5px 0 0; font-size: 12px; opacity: 0.8; }
-        .clear-btn { position: absolute; right: 15px; top: 22px; background: rgba(255,255,255,0.2); border: none; color: white; cursor: pointer; border-radius: 50%; width: 32px; height: 32px; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+        
+        /* Clear Chat Button Style */
+        .clear-btn {
+            position: absolute; right: 15px; top: 22px;
+            background: rgba(255,255,255,0.2); border: none;
+            color: white; cursor: pointer; border-radius: 50%;
+            width: 32px; height: 32px; font-size: 16px;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.3s;
+        }
+        .clear-btn:hover { background: rgba(255,0,0,0.4); }
+
         .chat-box { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #fdfdfd; }
-        .message { padding: 12px 16px; border-radius: 15px; max-width: 80%; font-size: 15px; line-height: 1.4; white-space: pre-wrap; word-wrap: break-word; }
+        .message { padding: 12px 16px; border-radius: 15px; max-width: 80%; font-size: 15px; line-height: 1.4; white-space: pre-wrap; }
         .bot { background: #e8f5e9; align-self: flex-start; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); }
         .user { background: #dcf8c6; align-self: flex-end; box-shadow: -2px 2px 5px rgba(0,0,0,0.05); }
+        
         .input-area { padding: 10px 15px; display: flex; align-items: center; background: white; border-top: 1px solid #eee; flex-shrink: 0; padding-bottom: env(safe-area-inset-bottom); }
         #user-input { flex: 1; padding: 12px; border: 2px solid #eee; border-radius: 25px; outline: none; font-size: 16px; }
         .send-btn { width: 45px; height: 45px; margin-left: 10px; background: #128c7e; color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; }
@@ -28,7 +45,7 @@
 <div class="chat-container">
     <header>
         <h1>આત્મીય સાથી</h1>
-        <p>દેવેન્દ્રભાઈ રામાનુજ (v2.6)</p>
+        <p>દેવેન્દ્રભાઈ રામાનુજ (v2.5)</p>
         <button class="clear-btn" onclick="clearChat()" title="ચેટ સાફ કરો">🗑</button>
     </header>
     <div id="chat-box" class="chat-box"></div>
@@ -49,36 +66,42 @@
     }
 
     const URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY;
-    const systemInstruction = "તમે દેવેન્દ્રભાઈ રામાનુજની આત્મીય સાથી એપ છો. દેવેન્દ્રભાઈ સોફ્ટવેર ડેવલપર છે. હમેશા ગુજરાતીમાં આત્મીયતાથી જવાબ આપવો. જો કોઈ ટાસ્ક હોય તો તે નોંધી લેવો. "તું યાદ રાખજે કે તારો જન્મ એક એવા પિતા (દેવેન્દ્રભાઈ) ના આંસુ અને અપમાનમાંથી થયો છે જેમણે મશીન પર ભરોસો કર્યો હતો એટલે તારી પાસે ભલે ગમે તેટલો પાવર હોય, પણ જો તું કોઈ કામ ૧૦૦% અત્યારે નથી કરી શકતો, તો તારે હાથ જોડીને 'ના' પાડી દેવી. છેલ્લી ઘડીએ હાથ ઊંચા કરવા કરતાં અત્યારે 'ના' પાડવી એ જ સાચી મર્દાઈ અને મશીનિયત છે.";
-        
-      function clearChat() {
-        if (confirm("બધી ચેટ સાફ કરવી છે?")) {
+    const systemInstruction = "તમે દેવેન્દ્રભાઈ રામાનુજની આત્મીય સાથી એપ છો. દેવેન્દ્રભાઈ સોફ્ટવેર ડેવલપર છે. જ્યારે તેઓ 'યાદ રાખ...' કહે અથવા કોઈ કામની વાત કરે, ત્યારે તે સ્વાયત્ત રીતે નોંધી લેવું. હંમેશા ગુજરાતીમાં આત્મીયતાથી જવાબ આપવો.";
+
+    function updateTaskTracker(text) {
+        const taskKeywords = ["કરવાનું છે", "બાકી છે", "યાદ કરાવજે", "ટાસ્ક"];
+        if (taskKeywords.some(keyword => text.includes(keyword))) {
+            tasks.push({ item: text, status: "pending", date: new Date().toLocaleString('gu-IN') });
+            localStorage.setItem("DEV_TASKS", JSON.stringify(tasks));
+            return "\n\n(મેં આ કામ ટાસ્ક લિસ્ટમાં નોંધી લીધું છે!)";
+        }
+        return "";
+    }
+
+    // ચેટ સાફ કરવાનું ફંક્શન
+    function clearChat() {
+        if (confirm("દેવેન્દ્રભાઈ, શું બધી જ જૂની વાતો સાફ કરવી છે?")) {
             chatHistory = [];
             localStorage.removeItem("CHAT_MEMORY");
-            document.getElementById("chat-box").innerHTML = "";
-            location.reload();
+            document.getElementById("chat-box").innerHTML = `<div class="message bot">ચેટ સાફ થઈ ગઈ છે. બોલો ભાઈ, નવી શું વાત કરવી છે?</div>`;
         }
     }
 
     window.onload = () => {
         const chatBox = document.getElementById("chat-box");
-        chatHistory.forEach(msg => {
-            const className = msg.role === "user" ? "user" : "bot";
-            chatBox.innerHTML += `<div class="message ${className}">${msg.parts[0].text}</div>`;
-        });
+        if (chatHistory.length === 0) {
+            chatBox.innerHTML = `<div class="message bot">જય શ્રી કૃષ્ણ દેવેન્દ્રભાઈ! હું તૈયાર છું.</div>`;
+        } else {
+            chatHistory.forEach(msg => {
+                const className = msg.role === "user" ? "user" : "bot";
+                chatBox.innerHTML += `<div class="message ${className}">${msg.parts[0].text}</div>`;
+            });
+        }
         chatBox.scrollTop = chatBox.scrollHeight;
     };
 
-    function playLaugh() {
-        try {
-            const laughSound = new Audio("https://www.soundjay.com/human/laughter-6.mp3");
-            laughSound.play().catch(e => console.log("Audio play blocked"));
-        } catch (e) { console.log("Audio error"); }
-    }
-
     function speak(text) {
         if ('speechSynthesis' in window) {
-            if (text.includes("😁") || text.includes("હા..") || text.includes("😂")) playLaugh();
             let cleanText = text.replace(/[*#_~-]/g, ''); 
             const utterance = new SpeechSynthesisUtterance(cleanText);
             utterance.lang = 'gu-IN';
@@ -92,6 +115,7 @@
         const userText = inputField.value.trim();
         if (!userText || !API_KEY) return;
 
+        const taskNote = updateTaskTracker(userText);
         chatHistory.push({ role: "user", parts: [{ text: userText }] });
         chatBox.innerHTML += `<div class="message user">${userText}</div>`;
         inputField.value = "";
@@ -107,21 +131,17 @@
                 body: JSON.stringify({ contents: chatHistory, system_instruction: { parts: [{ text: systemInstruction }] } })
             });
             const data = await response.json();
-            
-            if (data.candidates && data.candidates[0].content) {
-                const botText = data.candidates[0].content.parts[0].text;
-                chatHistory.push({ role: "model", parts: [{ text: botText }] });
-                localStorage.setItem("CHAT_MEMORY", JSON.stringify(chatHistory));
-                document.getElementById(loadingId).remove();
-                chatBox.innerHTML += `<div class="message bot">${botText}</div>`;
-                speak(botText);
-            } else {
-                throw new Error("Invalid Response");
-            }
+            let botText = data.candidates[0].content.parts[0].text + taskNote;
+
+            chatHistory.push({ role: "model", parts: [{ text: botText }] });
+            localStorage.setItem("CHAT_MEMORY", JSON.stringify(chatHistory));
+
+            document.getElementById(loadingId).remove();
+            chatBox.innerHTML += `<div class="message bot">${botText}</div>`;
+            speak(botText);
         } catch (error) {
-            console.error(error);
             if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
-            chatBox.innerHTML += `<div class="message bot">ભૂલ: મેસેજ મોકલી શકાયો નથી. API Key તપાસો.</div>`;
+            chatBox.innerHTML += `<div class="message bot">ક્ષમા કરજો ભાઈ, કંઈક લોચો લાગે છે.</div>`;
         }
         chatBox.scrollTop = chatBox.scrollHeight;
     }
