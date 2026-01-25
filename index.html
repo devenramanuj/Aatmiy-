@@ -99,8 +99,37 @@
         }
         chatBox.scrollTop = chatBox.scrollHeight;
     };
+// સ્ત્રી હાસ્યનો મધુર અવાજ વગાડવા માટે
+function playLaugh() {
+    // આ એક સ્ત્રીના મધુર હાસ્યની લિંક છે
+    const laughSound = new Audio("https://www.soundjay.com/human/laughter-6.mp3");
+    laughSound.volume = 0.6; 
+    laughSound.play();
+}
 
-    function speak(text) {
+function speak(text) {
+    if ('speechSynthesis' in window) {
+        // જો લખાણમાં સ્મિત કે હાસ્યના ચિન્હો હોય
+        const laughTrigger = ["😁", "😂", "હા..હા", "ચોક્કસ", "ભલે ભાઈ"];
+        if (laughTrigger.some(el => text.includes(el))) {
+            playLaugh();
+        }
+
+        let cleanText = text.replace(/[*#_~-]/g, ''); 
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        utterance.lang = 'gu-IN';
+        
+        // સ્ત્રીનો અવાજ સેટ કરવા માટે (જો બ્રાઉઝરમાં ઉપલબ્ધ હોય)
+        const voices = window.speechSynthesis.getVoices();
+        const femaleVoice = voices.find(voice => voice.lang === 'gu-IN' && voice.name.includes('Female'));
+        if (femaleVoice) utterance.voice = femaleVoice;
+
+        window.speechSynthesis.speak(utterance);
+    }
+}
+
+  funfuntion
+    ction speak(text) {
         if ('speechSynthesis' in window) {
             let cleanText = text.replace(/[*#_~-]/g, ''); 
             const utterance = new SpeechSynthesisUtterance(cleanText);
