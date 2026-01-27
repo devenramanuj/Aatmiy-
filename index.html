@@ -2,148 +2,301 @@
 <html lang="gu">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>આત્મીય સાથી - દેવેન્દ્રભાઈ રામાનુજ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>આત્મીય મિત્ર (Auto Scan)</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Hind+Vadodara:wght@300;500;700&display=swap');
-        * { box-sizing: border-box; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100dvh; overflow: hidden; font-family: 'Hind Vadodara', sans-serif; background: #0083b0; }
-        body { display: flex; justify-content: center; align-items: center; background: linear-gradient(135deg, #00b4db, #0083b0); }
-        .chat-container { width: 100%; max-width: 450px; height: 100dvh; background: white; display: flex; flex-direction: column; position: relative; }
+        /* --- CSS Styles --- */
+        :root { --primary: #d97706; --bg: #fff7ed; --chat-bg: #ffffff; --user-msg: #d97706; --bot-msg: #f3f4f6; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); margin: 0; height: 100vh; display: flex; justify-content: center; align-items: center; }
+        .container { width: 100%; max-width: 480px; height: 95vh; background: var(--chat-bg); border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow: hidden; border: 1px solid #fed7aa; position: relative; }
         
-        header { 
-            background: linear-gradient(to right, #075e54, #128c7e); 
-            color: white; padding: 15px; text-align: center; 
-            flex-shrink: 0; position: relative; 
-        }
-        header h1 { margin: 0; font-size: 20px; }
-        header p { margin: 5px 0 0; font-size: 12px; opacity: 0.8; }
-        
-        /* Clear Chat Button Style */
-        .clear-btn {
-            position: absolute; right: 15px; top: 22px;
-            background: rgba(255,255,255,0.2); border: none;
-            color: white; cursor: pointer; border-radius: 50%;
-            width: 32px; height: 32px; font-size: 16px;
-            display: flex; align-items: center; justify-content: center;
-            transition: 0.3s;
-        }
-        .clear-btn:hover { background: rgba(255,0,0,0.4); }
+        .header { background: var(--primary); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .icon-btn { background: rgba(255,255,255,0.2); border: none; color: white; padding: 8px; border-radius: 50%; cursor: pointer; }
 
-        .chat-box { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #fdfdfd; }
-        .message { padding: 12px 16px; border-radius: 15px; max-width: 80%; font-size: 15px; line-height: 1.4; white-space: pre-wrap; }
-        .bot { background: #e8f5e9; align-self: flex-start; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); }
-        .user { background: #dcf8c6; align-self: flex-end; box-shadow: -2px 2px 5px rgba(0,0,0,0.05); }
+        /* Settings Panel */
+        .settings-panel { background: #2d3748; color: white; padding: 15px; display: none; position: absolute; top: 0; bottom: 0; left: 0; right: 0; z-index: 100; overflow-y: auto; }
+        .settings-panel input { width: 95%; padding: 10px; margin: 5px 0 15px 0; border-radius: 5px; border: none; background: #4a5568; color: white; }
+        .btn-group { display: flex; gap: 10px; margin-bottom: 15px; }
+        .action-btn { flex: 1; padding: 10px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; }
         
-        .input-area { padding: 10px 15px; display: flex; align-items: center; background: white; border-top: 1px solid #eee; flex-shrink: 0; padding-bottom: env(safe-area-inset-bottom); }
-        #user-input { flex: 1; padding: 12px; border: 2px solid #eee; border-radius: 25px; outline: none; font-size: 16px; }
-        .send-btn { width: 45px; height: 45px; margin-left: 10px; background: #128c7e; color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; }
+        /* Auto Scan Overlay */
+        #scanOverlay { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 200; flex-direction: column; align-items: center; justify-content: center; color: white; }
+        .scanner-ring { width: 150px; height: 150px; border: 4px solid var(--primary); border-radius: 50%; position: relative; overflow: hidden; box-shadow: 0 0 20px var(--primary); animation: pulse 1.5s infinite; }
+        .scanner-ring video { width: 100%; height: 100%; object-fit: cover; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0.7); } 70% { box-shadow: 0 0 0 20px rgba(217, 119, 6, 0); } 100% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0); } }
+
+        /* Chat Area */
+        .chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; background-image: radial-gradient(#fed7aa 1px, transparent 1px); background-size: 20px 20px; }
+        .message { max-width: 80%; padding: 12px 16px; border-radius: 15px; font-size: 0.95rem; line-height: 1.5; word-wrap: break-word; }
+        .bot { align-self: flex-start; background: var(--bot-msg); color: #1f2937; }
+        .user { align-self: flex-end; background: var(--user-msg); color: white; }
+        .message img { max-width: 100%; border-radius: 10px; margin-top: 5px; }
+
+        /* Footer */
+        .input-area { padding: 10px; background: white; border-top: 1px solid #eee; display: flex; gap: 8px; align-items: center; }
+        .round-btn { background: none; border: 1px solid #ddd; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; }
+        input[type="text"] { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 25px; outline: none; }
+        .send-btn { background: var(--primary); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; }
+        .active { background: #d1fae5; color: #059669; border-color: #059669; }
+        #cameraPreviewHidden { display: none; } /* Hidden video element for capture */
     </style>
 </head>
 <body>
 
-<div class="chat-container">
-    <header>
-        <h1>આત્મીય સાથી</h1>
-        <p>દેવેન્દ્રભાઈ રામાનુજ (v2.5)</p>
-        <button class="clear-btn" onclick="clearChat()" title="ચેટ સાફ કરો">🗑</button>
-    </header>
-    <div id="chat-box" class="chat-box"></div>
+<div class="container">
+    <div id="scanOverlay">
+        <h2 style="margin-bottom: 20px;">ઓળખ ચકાસણી...</h2>
+        <div class="scanner-ring">
+            <video id="scanVideo" autoplay playsinline muted></video>
+        </div>
+        <p id="scanStatus" style="margin-top: 20px; color: #ccc;">ચહેરો સ્કેન થઈ રહ્યો છે...</p>
+        <button onclick="cancelScan()" style="margin-top: 30px; padding: 8px 20px; background: #444; color: white; border: none; border-radius: 20px; cursor: pointer;">Skip</button>
+        <canvas id="scanCanvas" style="display:none;"></canvas>
+    </div>
+
+    <div class="header">
+        <div><h2 style="margin:0;">આત્મીય મિત્ર</h2><span style="font-size:0.7rem;">Auto-Secure</span></div>
+        <button class="icon-btn" onclick="toggleSettings()">⚙️</button>
+    </div>
+
+    <div class="settings-panel" id="settingsPanel">
+        <h3>Configuration</h3>
+        <label>Gemini API Key</label> <input type="password" id="geminiKey">
+        <label>Model Name</label> <input type="text" id="modelName" value="gemini-2.0-flash-exp">
+        <label>ElevenLabs Key</label> <input type="password" id="elevenKey">
+        <hr style="border-color:#555">
+        <h3>Owner Face (Security)</h3>
+        <img id="ownerPreview" src="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;background:#ccc;display:block;margin:10px auto;">
+        <div class="btn-group">
+            <button class="action-btn" style="background:#3182ce" onclick="setOwnerFace()">📷 Set Face</button>
+            <button class="action-btn" style="background:#e53e3e" onclick="clearFace()">🗑️ Clear</button>
+        </div>
+        <button class="action-btn" style="background:#48bb78; width:100%;" onclick="saveSettings()">✅ Save & Close</button>
+    </div>
+
+    <div class="chat-box" id="chatBox"></div>
+    <div id="typing" style="text-align:center; font-size:0.8rem; color:#666; display:none;">મિત્ર વિચારી રહ્યો છે...</div>
+
     <div class="input-area">
-        <input type="text" id="user-input" placeholder="તમારી વાત કહો ભાઈ..." onkeypress="if(event.key==='Enter') sendMessage()">
+        <button class="round-btn" onclick="manualPhoto()">📷</button>
+        <button class="round-btn" id="audioBtn" onclick="toggleAudio()">🔊</button>
+        <input type="text" id="userInput" placeholder="Message..." autocomplete="off">
         <button class="send-btn" onclick="sendMessage()">➤</button>
     </div>
+    
+    <video id="manualVideo" style="display:none;" autoplay playsinline></video>
 </div>
 
 <script>
-    let API_KEY = localStorage.getItem("GEMINI_KEY");
-    let chatHistory = JSON.parse(localStorage.getItem("CHAT_MEMORY")) || [];
-    let tasks = JSON.parse(localStorage.getItem("DEV_TASKS")) || [];
-
-    if (!API_KEY || API_KEY === "null") {
-        API_KEY = prompt("દેવેન્દ્રભાઈ, તમારી Gemini API Key અહીં નાખો:");
-        if (API_KEY) localStorage.setItem("GEMINI_KEY", API_KEY);
-    }
-
-    const URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY;
-    const systemInstruction = "તમે દેવેન્દ્રભાઈ રામાનુજની આત્મીય સાથી એપ છો. દેવેન્દ્રભાઈ સોફ્ટવેર ડેવલપર છે. જ્યારે તેઓ 'યાદ રાખ...' કહે અથવા કોઈ કામની વાત કરે, ત્યારે તે સ્વાયત્ત રીતે નોંધી લેવું. હંમેશા ગુજરાતીમાં આત્મીયતાથી જવાબ આપવો.";
-
-    function updateTaskTracker(text) {
-        const taskKeywords = ["કરવાનું છે", "બાકી છે", "યાદ કરાવજે", "ટાસ્ક"];
-        if (taskKeywords.some(keyword => text.includes(keyword))) {
-            tasks.push({ item: text, status: "pending", date: new Date().toLocaleString('gu-IN') });
-            localStorage.setItem("DEV_TASKS", JSON.stringify(tasks));
-            return "\n\n(મેં આ કામ ટાસ્ક લિસ્ટમાં નોંધી લીધું છે!)";
-        }
-        return "";
-    }
-
-    // ચેટ સાફ કરવાનું ફંક્શન
-    function clearChat() {
-        if (confirm("દેવેન્દ્રભાઈ, શું બધી જ જૂની વાતો સાફ કરવી છે?")) {
-            chatHistory = [];
-            localStorage.removeItem("CHAT_MEMORY");
-            document.getElementById("chat-box").innerHTML = `<div class="message bot">ચેટ સાફ થઈ ગઈ છે. બોલો ભાઈ, નવી શું વાત કરવી છે?</div>`;
-        }
-    }
+    let config = { geminiKey: '', modelName: 'gemini-2.5-flash', elevenKey: '', voiceId: '21m00Tcm4TlvDq8ikWAM', ownerFace: null };
+    let isAudioOn = true;
+    let stream = null;
 
     window.onload = () => {
-        const chatBox = document.getElementById("chat-box");
-        if (chatHistory.length === 0) {
-            chatBox.innerHTML = `<div class="message bot">જય શ્રી કૃષ્ણ દેવેન્દ્રભાઈ! હું તૈયાર છું.</div>`;
+        const saved = localStorage.getItem('mitraConfigAuto');
+        if (saved) {
+            config = JSON.parse(saved);
+            document.getElementById('geminiKey').value = config.geminiKey;
+            document.getElementById('modelName').value = config.modelName;
+            document.getElementById('elevenKey').value = config.elevenKey;
+            if(config.ownerFace) document.getElementById('ownerPreview').src = `data:image/jpeg;base64,${config.ownerFace}`;
+            
+            // જો કી સેવ હોય, તો ઓટો સ્કેન શરૂ કરો
+            if (config.geminiKey) {
+                startAutoScan();
+            } else {
+                addBotMsg("નમસ્તે! પહેલા ⚙️ સેટિંગ્સમાં જઈને API Key નાખો.");
+            }
         } else {
-            chatHistory.forEach(msg => {
-                const className = msg.role === "user" ? "user" : "bot";
-                chatBox.innerHTML += `<div class="message ${className}">${msg.parts[0].text}</div>`;
-            });
+            addBotMsg("નમસ્તે! પહેલા ⚙️ સેટિંગ્સમાં જઈને API Key નાખો.");
         }
-        chatBox.scrollTop = chatBox.scrollHeight;
+        updateAudioBtn();
     };
 
-    function speak(text) {
-        if ('speechSynthesis' in window) {
-            let cleanText = text.replace(/[*#_~-]/g, ''); 
-            const utterance = new SpeechSynthesisUtterance(cleanText);
-            utterance.lang = 'gu-IN';
-            window.speechSynthesis.speak(utterance);
+    // --- AUTO SCAN LOGIC ---
+    async function startAutoScan() {
+        const overlay = document.getElementById('scanOverlay');
+        const video = document.getElementById('scanVideo');
+        const status = document.getElementById('scanStatus');
+        
+        overlay.style.display = 'flex';
+        status.innerText = "કેમેરો શરૂ થઈ રહ્યો છે...";
+
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+            video.srcObject = stream;
+            
+            status.innerText = "ચહેરો સ્થિર રાખો...";
+            
+            // 2.5 સેકન્ડ રાહ જુઓ જેથી કેમેરો ફોકસ થાય
+            setTimeout(async () => {
+                status.innerText = "વિશ્લેષણ ચાલે છે...";
+                
+                // Capture
+                const canvas = document.getElementById('scanCanvas');
+                canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+                canvas.getContext('2d').drawImage(video, 0, 0);
+                const currentFace = canvas.toDataURL('image/jpeg').split(',')[1];
+                
+                // Stop Camera
+                stream.getTracks().forEach(t => t.stop());
+                overlay.style.display = 'none';
+
+                // Send to AI
+                verifyUser(currentFace);
+
+            }, 2500);
+
+        } catch (e) {
+            overlay.style.display = 'none';
+            addBotMsg("ઓટો-સ્કેન થઈ શક્યું નથી (કેમેરા પરમિશન આપો). તમે મેન્યુઅલી મેસેજ કરી શકો છો.");
         }
     }
 
-    async function sendMessage() {
-        const inputField = document.getElementById("user-input");
-        const chatBox = document.getElementById("chat-box");
-        const userText = inputField.value.trim();
-        if (!userText || !API_KEY) return;
+    function cancelScan() {
+        if(stream) stream.getTracks().forEach(t => t.stop());
+        document.getElementById('scanOverlay').style.display = 'none';
+        addBotMsg("સ્કેન રદ કર્યું. તમે મેસેજ કરી શકો છો.");
+    }
 
-        const taskNote = updateTaskTracker(userText);
-        chatHistory.push({ role: "user", parts: [{ text: userText }] });
-        chatBox.innerHTML += `<div class="message user">${userText}</div>`;
-        inputField.value = "";
-        chatBox.scrollTop = chatBox.scrollHeight;
+    async function verifyUser(faceImage) {
+        addBotMsg("🔍 ઓળખ ચકાસણી થઈ રહી છે...");
+        
+        // જો માલિકનો ફોટો સેટ હોય તો સરખામણી, નહીંતર ખાલી સ્વાગત
+        let prompt = "";
+        const parts = [];
 
-        const loadingId = "loading-" + Date.now();
-        chatBox.innerHTML += `<div id="${loadingId}" class="message bot">...વિચારી રહ્યો છું...</div>`;
-
-        try {
-            const response = await fetch(URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ contents: chatHistory, system_instruction: { parts: [{ text: systemInstruction }] } })
-            });
-            const data = await response.json();
-            let botText = data.candidates[0].content.parts[0].text + taskNote;
-
-            chatHistory.push({ role: "model", parts: [{ text: botText }] });
-            localStorage.setItem("CHAT_MEMORY", JSON.stringify(chatHistory));
-
-            document.getElementById(loadingId).remove();
-            chatBox.innerHTML += `<div class="message bot">${botText}</div>`;
-            speak(botText);
-        } catch (error) {
-            if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
-            chatBox.innerHTML += `<div class="message bot">ક્ષમા કરજો ભાઈ, કંઈક લોચો લાગે છે.</div>`;
+        if (config.ownerFace) {
+            prompt = `
+            SYSTEM: Compare Image 1 (Owner) and Image 2 (Current User).
+            - IF MATCH: "જય શ્રી કૃષ્ણ દેવેન્દ્રભાઈ! ઓળખી ગયો. આજનો શું કાર્યક્રમ છે?" (Be friendly).
+            - IF NO MATCH: "તમે કોણ છો? હું દેવેન્દ્રભાઈ સિવાય કોઈ સાથે વાત નથી કરતો." (Stop access).
+            `;
+            parts.push({ text: prompt });
+            parts.push({ inline_data: { mime_type: "image/jpeg", data: config.ownerFace } });
+            parts.push({ inline_data: { mime_type: "image/jpeg", data: faceImage } });
+        } else {
+            prompt = `SYSTEM: This is the user. Look at his face and greet him warmly based on his expression. Say "જય શ્રી કૃષ્ણ" and his name if you know it, or just "મિત્ર".`;
+            parts.push({ text: prompt });
+            parts.push({ inline_data: { mime_type: "image/jpeg", data: faceImage } });
         }
-        chatBox.scrollTop = chatBox.scrollHeight;
+
+        callGeminiAPI(parts);
+    }
+
+    // --- GENERIC API CALL ---
+    async function callGeminiAPI(parts) {
+        document.getElementById('typing').style.display = 'block';
+        try {
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${config.modelName}:generateContent?key=${config.geminiKey}`, {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ contents: [{ parts: parts }] })
+            });
+            const data = await res.json();
+            document.getElementById('typing').style.display = 'none';
+            
+            if (data.error) addBotMsg(`Error: ${data.error.message}`);
+            else {
+                const text = data.candidates[0].content.parts[0].text;
+                addBotMsg(text);
+                if(isAudioOn) speak(text);
+            }
+        } catch(e) {
+            document.getElementById('typing').style.display = 'none';
+            addBotMsg("Network Error.");
+        }
+    }
+
+    // --- MANUAL CHAT ---
+    async function sendMessage() {
+        const text = document.getElementById('userInput').value.trim();
+        if(!text) return;
+        
+        // Show user msg
+        const div = document.createElement('div'); div.className = 'message user'; div.innerText = text;
+        document.getElementById('chatBox').appendChild(div);
+        document.getElementById('userInput').value = '';
+
+        // API Call
+        const parts = [{ text: `System: તું 'આત્મીય મિત્ર' છે. User: ${text}` }];
+        callGeminiAPI(parts);
+    }
+    
+    // --- MANUAL PHOTO ---
+    async function manualPhoto() {
+        // Quick hidden capture for chat context
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+            const vid = document.getElementById('manualVideo');
+            vid.srcObject = stream;
+            vid.onloadedmetadata = () => {
+                const cvs = document.createElement('canvas');
+                cvs.width = vid.videoWidth; cvs.height = vid.videoHeight;
+                cvs.getContext('2d').drawImage(vid,0,0);
+                const img = cvs.toDataURL('image/jpeg').split(',')[1];
+                stream.getTracks().forEach(t=>t.stop());
+                
+                // Send photo with generic query
+                const div = document.createElement('div'); div.className='message user'; div.innerText = "(ફોટો મોકલ્યો)";
+                document.getElementById('chatBox').appendChild(div);
+                
+                callGeminiAPI([
+                    { text: "System: આ ફોટો જુઓ અને તેમાં શું છે તે વિશે અથવા મારા મૂડ વિશે વાત કરો." },
+                    { inline_data: { mime_type: "image/jpeg", data: img } }
+                ]);
+            };
+        } catch(e) { alert("Camera Error"); }
+    }
+
+    // --- UTILS ---
+    function addBotMsg(text) {
+        const div = document.createElement('div'); div.className = 'message bot';
+        div.innerHTML = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+        const box = document.getElementById('chatBox');
+        box.appendChild(div); box.scrollTop = box.scrollHeight;
+    }
+    
+    // --- SETTINGS ---
+    function toggleSettings() { const p=document.getElementById('settingsPanel'); p.style.display=p.style.display==='block'?'none':'block'; }
+    function saveSettings() {
+        config.geminiKey = document.getElementById('geminiKey').value;
+        config.modelName = document.getElementById('modelName').value;
+        config.elevenKey = document.getElementById('elevenKey').value;
+        localStorage.setItem('mitraConfigAuto', JSON.stringify(config));
+        toggleSettings();
+        alert('Saved! Page will reload.');
+        location.reload(); // Reload to test auto-scan
+    }
+    async function setOwnerFace() {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+        const vid = document.createElement('video'); vid.srcObject = stream; vid.autoplay = true;
+        // Wait briefly
+        setTimeout(() => {
+            const cvs = document.createElement('canvas'); cvs.width = 640; cvs.height = 480;
+            cvs.getContext('2d').drawImage(vid, 0, 0, 640, 480);
+            config.ownerFace = cvs.toDataURL('image/jpeg').split(',')[1];
+            document.getElementById('ownerPreview').src = `data:image/jpeg;base64,${config.ownerFace}`;
+            stream.getTracks().forEach(t=>t.stop());
+        }, 1000);
+    }
+    function clearFace() { config.ownerFace=null; document.getElementById('ownerPreview').src=""; }
+    
+    // --- AUDIO ---
+    function toggleAudio() { isAudioOn = !isAudioOn; window.speechSynthesis.cancel(); updateAudioBtn(); }
+    function updateAudioBtn() { const b = document.getElementById('audioBtn'); b.innerText = isAudioOn ? '🔊' : '🔇'; isAudioOn ? b.classList.add('active') : b.classList.remove('active'); }
+    async function speak(text) {
+        let clean = text.replace(/[\*"`';_#]/g, '');
+        if (config.elevenKey) {
+             try {
+                const r = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${config.voiceId}`, { method: 'POST', headers: {'Content-Type':'application/json','xi-api-key':config.elevenKey}, body: JSON.stringify({text:clean, model_id:"eleven_multilingual_v2"})});
+                if(r.ok) { new Audio(URL.createObjectURL(await r.blob())).play(); return; }
+            } catch(e){}
+        }
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(clean);
+        const v = window.speechSynthesis.getVoices().find(v=>v.lang.includes('gu'));
+        if(v) u.voice = v;
+        window.speechSynthesis.speak(u);
     }
 </script>
 </body>
