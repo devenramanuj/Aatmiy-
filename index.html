@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Twin-Me (v2.5 Final)</title>
+    <title>Twin-Me (ગુજરાતી)</title>
     <style>
         /* --- CSS STYLES --- */
-        :root { --primary: #2563eb; --bg: #0f172a; --chat-bg: #1e293b; --user-msg: #3b82f6; --bot-msg: #334155; --text: #e2e8f0; }
+        :root { --primary: #ea580c; --bg: #1a0500; --chat-bg: #2d0a00; --user-msg: #ea580c; --bot-msg: #431407; --text: #ffedd5; }
         
         body { 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            font-family: 'Mukta Vaani', 'Segoe UI', sans-serif; 
             background-color: var(--bg); color: var(--text); margin: 0; 
             height: 100dvh; display: flex; justify-content: center; overflow: hidden; 
         }
@@ -25,12 +25,12 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; 
         }
         .scanner-ui { 
-            width: 220px; height: 220px; border: 3px solid #2563eb; border-radius: 20px; 
-            position: relative; overflow: hidden; box-shadow: 0 0 40px rgba(37, 99, 235, 0.4); margin-bottom: 20px;
+            width: 220px; height: 220px; border: 3px solid #ea580c; border-radius: 20px; 
+            position: relative; overflow: hidden; box-shadow: 0 0 40px rgba(234, 88, 12, 0.4); margin-bottom: 20px;
         }
         .scan-line { 
-            width: 100%; height: 3px; background: #00ff00; position: absolute; top: 0; 
-            animation: scan 2.5s infinite; box-shadow: 0 0 15px #00ff00; 
+            width: 100%; height: 3px; background: #fb923c; position: absolute; top: 0; 
+            animation: scan 2.5s infinite; box-shadow: 0 0 15px #fb923c; 
         }
         @keyframes scan { 0% {top: 0;} 100% {top: 100%;} }
         
@@ -42,10 +42,10 @@
 
         /* CHAT INTERFACE */
         .header { 
-            padding: 15px; background: rgba(30,41,59,0.95); border-bottom: 1px solid #334155; 
+            padding: 15px; background: rgba(45, 10, 0, 0.95); border-bottom: 1px solid #5c1c0a; 
             display: flex; justify-content: space-between; align-items: center; z-index: 100;
         }
-        .status-badge { font-size: 12px; background: #22c55e; color: #000; padding: 2px 8px; border-radius: 10px; font-weight: bold; }
+        .status-badge { font-size: 12px; background: #16a34a; color: #fff; padding: 2px 8px; border-radius: 10px; font-weight: bold; }
 
         .chat-box { 
             flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; 
@@ -53,37 +53,37 @@
         .message { 
             max-width: 85%; padding: 12px 16px; border-radius: 15px; font-size: 1rem; line-height: 1.5; word-wrap: break-word; 
         }
-        .bot { align-self: flex-start; background: var(--bot-msg); border-bottom-left-radius: 2px; border: 1px solid #475569; }
+        .bot { align-self: flex-start; background: var(--bot-msg); border-bottom-left-radius: 2px; border: 1px solid #7c2d12; }
         .user { align-self: flex-end; background: var(--user-msg); color: white; border-bottom-right-radius: 2px; }
         .message img { max-width: 100%; border-radius: 10px; margin-top: 10px; border: 1px solid #555; }
 
         /* INPUT AREA */
         .input-area { 
-            padding: 10px; background: var(--chat-bg); border-top: 1px solid #334155; 
+            padding: 10px; background: var(--chat-bg); border-top: 1px solid #5c1c0a; 
             display: flex; gap: 8px; align-items: center; 
         }
         input[type="text"] { 
-            flex: 1; padding: 12px; background: #0f172a; border: 1px solid #334155; 
+            flex: 1; padding: 12px; background: #1a0500; border: 1px solid #5c1c0a; 
             color: white; border-radius: 25px; outline: none; font-size: 16px; 
         }
         .icon-btn { 
-            background: #334155; color: white; border: none; width: 45px; height: 45px; 
+            background: #431407; color: white; border: 1px solid #5c1c0a; width: 45px; height: 45px; 
             border-radius: 50%; display: flex; justify-content: center; align-items: center; 
             font-size: 20px; cursor: pointer; transition: 0.2s;
         }
-        .send-btn { background: var(--primary); }
+        .send-btn { background: var(--primary); border: none; }
         .recording { background: #ef4444 !important; animation: pulse 1s infinite; }
         @keyframes pulse { 0% {box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);} 70% {box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);} 100% {box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);} }
 
         /* SETTINGS MODAL */
         #settingsModal { 
-            display: none; position: absolute; inset: 0; background: #0f172a; 
+            display: none; position: absolute; inset: 0; background: #1a0500; 
             z-index: 3000; padding: 20px; overflow-y: auto; 
         }
         .setting-group { margin-bottom: 20px; text-align: left; }
-        .setting-group label { display: block; color: #94a3b8; margin-bottom: 8px; font-weight: bold; }
+        .setting-group label { display: block; color: #fdba74; margin-bottom: 8px; font-weight: bold; }
         .setting-group input { 
-            width: 100%; padding: 12px; background: #1e293b; border: 1px solid #334155; 
+            width: 100%; padding: 12px; background: #2d0a00; border: 1px solid #5c1c0a; 
             color: white; border-radius: 8px; box-sizing: border-box; font-size: 16px; 
         }
         .btn-full { 
@@ -99,53 +99,53 @@
 <div class="container">
     
     <div id="securityLayer">
-        <h2 style="color: #fff; letter-spacing: 2px;">TWIN-ME <span style="font-size: 12px; color: #0f0;">PRO</span></h2>
+        <h2 style="color: #ea580c; letter-spacing: 2px;">TWIN-ME <span style="font-size: 12px; color: #fff;">ગુજરાતી</span></h2>
         <div class="scanner-ui">
             <video id="scanVideo" autoplay playsinline muted></video>
             <div class="scan-line"></div>
         </div>
         
-        <p id="scanStatus" style="color: #00d2ff; font-family: monospace;">INITIALIZING...</p>
+        <p id="scanStatus" style="color: #fdba74; font-family: sans-serif;">શરૂ થઈ રહ્યું છે...</p>
         
         <div id="pinArea">
             <input type="password" id="pinInput" placeholder="PIN" maxlength="4">
-            <button onclick="checkPin()" class="btn-full" style="width: auto; padding: 10px 20px; background: #2563eb; margin-left: 5px;">GO</button>
+            <button onclick="checkPin()" class="btn-full" style="width: auto; padding: 10px 20px; background: #ea580c; margin-left: 5px;">ખોલો</button>
         </div>
 
         <div style="margin-top: 30px; display: flex; gap: 10px; width: 85%;">
-            <button onclick="startScan()" class="btn-full" style="background: #2563eb;">RETRY</button>
-            <button onclick="showSettings()" class="btn-full" style="background: #475569;">⚙️ SETUP</button>
+            <button onclick="startScan()" class="btn-full" style="background: #ea580c;">ફરી પ્રયાસ</button>
+            <button onclick="showSettings()" class="btn-full" style="background: #431407;">⚙️ સેટિંગ્સ</button>
         </div>
     </div>
 
     <div class="header">
         <div style="display: flex; align-items: center; gap: 10px;">
-            <div style="width: 40px; height: 40px; background: #334155; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 20px;">🧑‍💻</div>
+            <div style="width: 40px; height: 40px; background: #431407; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 20px;">🧑‍💻</div>
             <div>
-                <div style="font-weight: bold;">Devendra (Twin)</div>
-                <span class="status-badge">Online (v2.5)</span>
+                <div style="font-weight: bold;">દેવેન્દ્ર (Twin)</div>
+                <span class="status-badge">ઓનલાઇન</span>
             </div>
         </div>
         <button onclick="showSettings()" style="background:none; border:none; font-size:24px; cursor:pointer;">⚙️</button>
     </div>
 
     <div class="chat-box" id="chatBox">
-        <div class="message bot">જય શ્રી કૃષ્ણ! હું તૈયાર છું. (Model: 2.5 Flash)</div>
+        <div class="message bot">જય શ્રી કૃષ્ણ! હું તૈયાર છું. બોલો શું સેવા કરું?</div>
     </div>
 
     <div class="input-area">
         <button class="icon-btn" onclick="captureVision()">📷</button>
         <button class="icon-btn" id="micBtn" onclick="toggleVoice()">🎤</button>
-        <input type="text" id="userInput" placeholder="Message..." autocomplete="off">
+        <input type="text" id="userInput" placeholder="અહીં લખો..." autocomplete="off">
         <button class="icon-btn send-btn" onclick="sendMessage()">➤</button>
     </div>
 
     <div id="settingsModal">
-        <h2 style="color:white; border-bottom: 1px solid #333; padding-bottom: 10px;">Configuration</h2>
+        <h2 style="color:#ea580c; border-bottom: 1px solid #5c1c0a; padding-bottom: 10px;">સેટિંગ્સ</h2>
         
         <div class="setting-group">
             <label>1. Gemini API Key</label>
-            <input type="password" id="geminiKey" placeholder="Paste Key Here">
+            <input type="password" id="geminiKey" placeholder="Key અહીં પેસ્ટ કરો">
         </div>
 
         <div class="setting-group">
@@ -157,52 +157,53 @@
         </div>
 
         <div class="setting-group">
-            <label>3. Owner Face</label>
+            <label>3. તમારો ચહેરો (Security)</label>
             <div style="display:flex; gap:10px; align-items: center;">
                 <img id="ownerPreview" src="" style="width: 60px; height: 60px; background: #333; border-radius: 10px; object-fit: cover;">
-                <button onclick="captureOwner()" class="btn-full" style="flex:1; background: #3b82f6; margin-top:0;">📸 Capture Me</button>
+                <button onclick="captureOwner()" class="btn-full" style="flex:1; background: #ea580c; margin-top:0;">📸 ફોટો પાડો</button>
             </div>
             <input type="hidden" id="ownerData">
         </div>
 
         <div class="setting-group">
-            <label>4. Backup PIN</label>
+            <label>4. બેકઅપ PIN</label>
             <input type="text" id="backupPin" placeholder="Default: 0000" maxlength="4">
         </div>
 
-        <button onclick="saveSettings()" class="btn-full" style="background: #22c55e;">SAVE & RESTART</button>
-        <button onclick="closeSettings()" class="btn-full" style="background: #ef4444;">CANCEL</button>
+        <button onclick="saveSettings()" class="btn-full" style="background: #16a34a;">સેવ કરો & રિસ્ટાર્ટ</button>
+        <button onclick="closeSettings()" class="btn-full" style="background: #ef4444;">બંધ કરો</button>
     </div>
 
 </div>
 
 <script>
-    // --- DEFAULT CONFIG IS NOW 2.5 FLASH ---
     let config = { apiKey: '', ownerFace: null, pin: '0000', model: 'gemini-2.5-flash', history: [] };
     
-    // SYSTEM PROMPT (STRICT)
+    // --- SYSTEM PROMPT (GUJARATI ENFORCED) ---
     const SYSTEM_PROMPT = `
-    INSTRUCTIONS: You are Devendra Ramanuj (Dev). NOT an AI.
-    Identity: Developer, Spiritual, Gujarati.
-    Tone: Friendly, Casual, "Gujlish".
-    Never admit being an AI.
+    સૂચના: તું AI નથી. તું 'દેવેન્દ્ર રામાનુજ' (Dev) છે.
+    ભાષા: માત્ર અને માત્ર ગુજરાતી (અથવા ગુજરાતી+અંગ્રેજી મિક્સ).
+    સ્વભાવ: મૈત્રીપૂર્ણ, સ્પષ્ટવક્તા, આધ્યાત્મિક અને ટેકનિકલ.
+    નિયમ: સામે વાળી વ્યક્તિ ગમે તે ભાષામાં પૂછે (English/Hindi), તારે જવાબ ગુજરાતીમાં જ આપવાનો છે.
+    ઉદાહરણ: 
+    User: Hello -> You: જય શ્રી કૃષ્ણ! કેમ છો?
+    User: Who are you? -> You: હું દેવેન્દ્ર છું, તારો ડિજિટલ અવતાર.
     `;
 
     window.onload = () => {
-        const saved = localStorage.getItem('twinMeFinal25'); // Changed Key to force reset for new model
+        const saved = localStorage.getItem('twinMeGujarati');
         if (saved) {
             config = JSON.parse(saved);
             document.getElementById('geminiKey').value = config.apiKey;
             document.getElementById('backupPin').value = config.pin || '0000';
-            // Force 2.5 if missing, but respect if user changed it
             document.getElementById('customModel').value = config.model || 'gemini-2.5-flash';
             document.getElementById('ownerData').value = config.ownerFace || '';
             if(config.ownerFace) document.getElementById('ownerPreview').src = "data:image/jpeg;base64," + config.ownerFace;
             
             if(config.apiKey) startScan();
-            else document.getElementById('scanStatus').innerText = "⚠️ API KEY MISSING";
+            else document.getElementById('scanStatus').innerText = "⚠️ API Key નાખો";
         } else {
-            document.getElementById('scanStatus').innerText = "⚠️ PLEASE SETUP FIRST";
+            document.getElementById('scanStatus').innerText = "⚠️ પહેલા સેટિંગ્સ કરો";
         }
     };
 
@@ -215,11 +216,11 @@
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
             video.srcObject = stream;
-            status.innerText = "SCANNING...";
-            status.style.color = "#00d2ff";
+            status.innerText = "ચહેરો ચકાસી રહ્યું છે...";
+            status.style.color = "#fdba74";
 
             setTimeout(async () => {
-                if (!config.apiKey) { status.innerText = "API KEY MISSING"; return; }
+                if (!config.apiKey) { status.innerText = "Key નથી મળી"; return; }
                 if (!config.ownerFace) { unlockApp(stream); return; }
 
                 const canvas = document.createElement('canvas');
@@ -230,17 +231,17 @@
                 const result = await verifyIdentity(currentFace);
 
                 if (result.match) {
-                    status.innerText = "ACCESS GRANTED ✅";
+                    status.innerText = "સ્વાગત છે! ✅";
                     status.style.color = "#22c55e";
                     setTimeout(() => unlockApp(stream), 1000);
                 } else {
-                    status.innerText = "MISMATCH ❌";
+                    status.innerText = "ઓળખ અમાન્ય ❌";
                     status.style.color = "red";
                     document.getElementById('pinArea').style.display = 'block';
                 }
             }, 2000);
         } catch (e) {
-            status.innerText = "CAMERA ERROR";
+            status.innerText = "કેમેરા એરર";
             document.getElementById('pinArea').style.display = 'block';
         }
     }
@@ -258,7 +259,7 @@
 
     function checkPin() {
         if (document.getElementById('pinInput').value === config.pin) unlockApp(document.getElementById('scanVideo').srcObject);
-        else alert("WRONG PIN");
+        else alert("ખોટો PIN છે!");
     }
 
     function unlockApp(stream) {
@@ -287,7 +288,7 @@
         config.history.push({ role: "user", parts: userParts });
 
         const tempId = "typing-" + Date.now();
-        chatBox.innerHTML += `<div class="message bot" id="${tempId}">...</div>`;
+        chatBox.innerHTML += `<div class="message bot" id="${tempId}">લખી રહ્યો છે...</div>`;
         chatBox.scrollTop = chatBox.scrollHeight;
 
         try {
@@ -311,7 +312,6 @@
 
     // --- API & SETTINGS ---
     async function callGeminiChat(contents) {
-        // DEFAULT IS NOW 2.5 FLASH
         const modelToUse = config.model || 'gemini-2.5-flash';
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelToUse}:generateContent?key=${config.apiKey}`;
         const response = await fetch(url, {
@@ -339,6 +339,7 @@
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text.replace(/[*#]/g, ''));
         const voices = window.speechSynthesis.getVoices();
+        // Try to get Hindi/Gujarati voice, else default
         const gujVoice = voices.find(v => v.lang.includes('gu')) || voices.find(v => v.lang.includes('hi'));
         if(gujVoice) utterance.voice = gujVoice;
         window.speechSynthesis.speak(utterance);
@@ -355,7 +356,7 @@
         };
         recognition.onresult = (e) => document.getElementById('userInput').value = e.results[0][0].transcript;
     }
-    function toggleVoice() { if(recognition) recognition.start(); else alert("No Voice Support"); }
+    function toggleVoice() { if(recognition) recognition.start(); else alert("Voice not supported"); }
 
     async function captureVision() {
         const video = document.createElement('video');
@@ -382,7 +383,7 @@
         config.model = document.getElementById('customModel').value || 'gemini-2.5-flash';
         config.pin = document.getElementById('backupPin').value || '0000';
         config.ownerFace = document.getElementById('ownerData').value;
-        localStorage.setItem('twinMeFinal25', JSON.stringify(config));
+        localStorage.setItem('twinMeGujarati', JSON.stringify(config));
         location.reload();
     }
     async function captureOwner() {
@@ -396,7 +397,7 @@
         let b64 = c.toDataURL('image/jpeg').split(',')[1];
         document.getElementById('ownerData').value = b64;
         document.getElementById('ownerPreview').src = "data:image/jpeg;base64," + b64;
-        alert("Face Captured!");
+        alert("ફોટો લેવાઈ ગયો!");
     }
     
     document.getElementById('userInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
