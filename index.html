@@ -226,34 +226,64 @@
     }
 
     // --- AUTOMATION (COMMANDS) ---
+        // --- ADVANCED AUTOMATION (APPS & COMMANDS) ---
     function checkLocalCommands(text) {
         const lower = text.toLowerCase();
         
-        if (lower.includes("dark mode") || lower.includes("ડાર્ક મોડ")) {
+        // 1. App Opening (Deep Links)
+        if (lower.includes("open whatsapp") || lower.includes("વોટ્સએપ")) {
+            addMessageToUI('bot', "WhatsApp ખોલી રહ્યો છું...");
+            window.location.href = "whatsapp://"; // Opens App directly
+            return true;
+        }
+        
+        if (lower.includes("open youtube") || lower.includes("યુટ્યુબ")) {
+            addMessageToUI('bot', "YouTube શરૂ કરું છું...");
+            window.location.href = "vnd.youtube://"; // Opens App directly
+            return true;
+        }
+        
+        if (lower.includes("call") || lower.includes("કોલ કર") || lower.includes("phone")) {
+            addMessageToUI('bot', "ડાયલર ખોલું છું...");
+            window.location.href = "tel:"; // Opens Phone Dialer
+            return true;
+        }
+
+        if (lower.includes("map") || lower.includes("નકશો")) {
+            addMessageToUI('bot', "Google Maps ખોલું છું...");
+            window.location.href = "geo:0,0?q="; // Opens Maps
+            return true;
+        }
+
+        // 2. Google Search (જો બીજું કઈ ન મળે તો સર્ચ કરે)
+        if (lower.startsWith("search") || lower.startsWith("સર્ચ")) {
+            let query = text.replace("search", "").replace("સર્ચ", "").trim();
+            addMessageToUI('bot', `ગુગલ પર શોધી રહ્યો છું: ${query}`);
+            window.open(`https://www.google.com/search?q=${query}`, '_blank');
+            return true;
+        }
+
+        // 3. UI Themes (Old Commands)
+        if (lower.includes("dark mode") || lower.includes("ડાર્ક")) {
             document.documentElement.style.setProperty('--bg', '#000000');
             document.documentElement.style.setProperty('--chat-bg', '#111111');
             addMessageToUI('bot', "Dark mode activated 🌑");
             return true;
         }
-        if (lower.includes("light mode") || lower.includes("લાઈટ મોડ")) {
+        if (lower.includes("light mode") || lower.includes("લાઈટ")) {
             document.documentElement.style.setProperty('--bg', '#f0f9ff');
             document.documentElement.style.setProperty('--chat-bg', '#ffffff');
-            document.documentElement.style.setProperty('--text', '#1e293b');
             addMessageToUI('bot', "Light mode activated ☀️");
             return true;
         }
-        if (lower.includes("clear chat") || lower.includes("સાફ કર")) {
+        if (lower.includes("clear") || lower.includes("સાફ")) {
             clearMemory();
             return true;
         }
-        if (lower.includes("red theme") || lower.includes("લાલ")) {
-             document.documentElement.style.setProperty('--primary', '#ef4444');
-             document.documentElement.style.setProperty('--user-msg', '#ef4444');
-             addMessageToUI('bot', "Theme changed to Red 🔴");
-             return true;
-        }
-        return false;
+
+        return false; // જો આમાંથી કઈ ન હોય, તો જ AI જવાબ આપશે
     }
+
 
     function addMessageToUI(role, text, img = null) {
         const box = document.getElementById('chatBox');
