@@ -3,67 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Twin-Me Mobile</title>
+    <title>Twin-Me (Secured)</title>
     <style>
-        /* --- Mobile Optimized Styles --- */
+        /* --- Styles --- */
         :root { --primary: #2563eb; --bg: #0f172a; --chat-bg: #1e293b; --user-msg: #3b82f6; --bot-msg: #334155; --text: #e2e8f0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; height: 100dvh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        .container { width: 100%; height: 100%; background: var(--chat-bg); display: flex; flex-direction: column; position: relative; }
         
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-            background-color: var(--bg); color: var(--text); margin: 0; 
-            height: 100dvh; /* Mobile Viewport Fix */
-            display: flex; justify-content: center; align-items: center; overflow: hidden; 
-        }
-        
-        .container { 
-            width: 100%; height: 100%; 
-            background: var(--chat-bg); display: flex; flex-direction: column; position: relative; 
-        }
-        
-        /* Header */
-        .header { 
-            background: rgba(30, 41, 59, 0.95); padding: 15px; 
-            border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; 
-            z-index: 10; 
-        }
-        .status-dot { height: 10px; width: 10px; background-color: #22c55e; border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 10px #22c55e; }
-        
-        /* Security Overlay (Z-Index: 900) */
-        #securityLayer { 
-            position: absolute; inset: 0; background: #000; z-index: 900; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; 
-        }
-        .scanner-ui { 
-            width: 200px; height: 200px; border: 2px solid #2563eb; border-radius: 20px; 
-            position: relative; overflow: hidden; box-shadow: 0 0 30px rgba(37, 99, 235, 0.3); margin-bottom: 20px;
-        }
+        /* Security Overlay */
+        #securityLayer { position: absolute; inset: 0; background: #000; z-index: 900; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .scanner-ui { width: 200px; height: 200px; border: 2px solid #2563eb; border-radius: 20px; position: relative; overflow: hidden; box-shadow: 0 0 30px rgba(37, 99, 235, 0.3); margin-bottom: 20px; }
         .scan-line { width: 100%; height: 2px; background: #0f0; position: absolute; top: 0; animation: scan 2s infinite; box-shadow: 0 0 10px #0f0; }
         @keyframes scan { 0% {top: 0;} 100% {top: 100%;} }
         
+        /* PIN Input (Backup) */
+        #pinArea { display: none; margin-top: 15px; }
+        #pinInput { padding: 10px; border-radius: 5px; border: 1px solid #333; background: #222; color: white; width: 100px; text-align: center; letter-spacing: 5px; }
+
         /* Chat Area */
-        .chat-box { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
+        .chat-box { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
         .message { max-width: 85%; padding: 12px 16px; border-radius: 12px; font-size: 1rem; line-height: 1.5; word-wrap: break-word; }
         .bot { align-self: flex-start; background: var(--bot-msg); border-bottom-left-radius: 2px; }
         .user { align-self: flex-end; background: var(--user-msg); color: white; border-bottom-right-radius: 2px; }
-
-        /* Input Area */
         .input-area { padding: 10px; background: var(--chat-bg); border-top: 1px solid #334155; display: flex; gap: 10px; align-items: center; }
         input[type="text"] { flex: 1; padding: 12px; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 25px; outline: none; font-size: 16px; }
         .send-btn { background: var(--primary); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 20px; }
-
-        /* Settings Modal (FIXED Z-Index: 1000) */
-        #settingsModal { 
-            display: none; position: absolute; inset: 0; 
-            background: #0f172a; z-index: 1000; /* Higher than Security Layer */
-            padding: 20px; overflow-y: auto; 
-        }
+        
+        /* Settings */
+        #settingsModal { display: none; position: absolute; inset: 0; background: #0f172a; z-index: 1000; padding: 20px; overflow-y: auto; }
         .setting-group { margin-bottom: 20px; text-align: left; }
-        .setting-group label { display: block; color: #94a3b8; margin-bottom: 8px; font-size: 1rem; }
-        .setting-group input { width: 100%; padding: 12px; background: #1e293b; border: 1px solid #334155; color: white; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
-        
-        .btn-full { width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; color: white; margin-top: 10px; }
-        
-        /* Video Hidden */
+        .setting-group label { display: block; color: #94a3b8; margin-bottom: 8px; }
+        .setting-group input { width: 100%; padding: 12px; background: #1e293b; border: 1px solid #334155; color: white; border-radius: 8px; box-sizing: border-box; }
+        .btn-full { width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; color: white; margin-top: 10px; cursor: pointer; }
         video { object-fit: cover; width: 100%; height: 100%; transform: scaleX(-1); }
     </style>
 </head>
@@ -72,28 +43,27 @@
 <div class="container">
     
     <div id="securityLayer">
-        <h2 style="color: #fff; letter-spacing: 2px;">TWIN-ME</h2>
+        <h2 style="color: #fff;">TWIN-ME</h2>
         <div class="scanner-ui">
             <video id="scanVideo" autoplay playsinline muted></video>
             <div class="scan-line"></div>
         </div>
-        <p id="scanStatus" style="color: #94a3b8; font-family: monospace;">INITIALIZING...</p>
+        <p id="scanStatus" style="color: #94a3b8; font-family: monospace; font-size: 12px;">INITIALIZING...</p>
         
+        <div id="pinArea">
+            <input type="password" id="pinInput" placeholder="PIN" maxlength="4">
+            <button onclick="checkPin()" style="padding: 10px; background: #2563eb; color: white; border: none; border-radius: 5px;">GO</button>
+        </div>
+
         <div style="margin-top: 20px; display: flex; gap: 10px; width: 80%;">
-            <button onclick="startScan()" class="btn-full" style="background: #2563eb;">RETRY</button>
+            <button onclick="startScan()" class="btn-full" style="background: #2563eb;">RETRY SCAN</button>
             <button onclick="showSettings()" class="btn-full" style="background: #475569;">⚙️ SETUP</button>
         </div>
     </div>
 
-    <div class="header">
-        <div style="display: flex; align-items: center;">
-            <span class="status-dot"></span>
-            <div>
-                <div style="font-weight: bold;">Devendra (Twin)</div>
-                <div style="font-size: 0.7rem; color: #94a3b8;">Online</div>
-            </div>
-        </div>
-        <button onclick="showSettings()" style="background: none; border: none; font-size: 24px;">⚙️</button>
+    <div style="padding: 15px; background: rgba(30,41,59,0.9); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333;">
+        <div style="font-weight: bold;">Devendra (Twin)</div>
+        <button onclick="showSettings()" style="background:none; border:none; font-size:20px;">⚙️</button>
     </div>
 
     <div class="chat-box" id="chatBox"></div>
@@ -104,25 +74,23 @@
     </div>
 
     <div id="settingsModal">
-        <h2 style="color:white; margin-bottom: 30px;">Configuration</h2>
-        
+        <h2 style="color:white; margin-bottom: 20px;">Configuration</h2>
         <div class="setting-group">
             <label>Gemini API Key</label>
             <input type="password" id="geminiKey" placeholder="Paste Key Here">
-            <div style="font-size: 12px; color: #64748b; margin-top: 5px;">
-                Get key from aistudio.google.com
-            </div>
         </div>
-
+        <div class="setting-group">
+            <label>Backup PIN (4 Digits)</label>
+            <input type="text" id="backupPin" placeholder="Ex: 1234" maxlength="4">
+        </div>
         <div class="setting-group">
             <label>Owner Face</label>
             <div style="display:flex; gap:10px; align-items: center;">
                 <img id="ownerPreview" src="" style="width: 60px; height: 60px; background: #333; border-radius: 50%; object-fit: cover;">
-                <button onclick="captureOwner()" class="btn-full" style="flex:1; background: #3b82f6;">📸 Capture Me</button>
+                <button onclick="captureOwner()" class="btn-full" style="flex:1; background: #3b82f6;">📸 Capture Owner</button>
             </div>
             <input type="hidden" id="ownerData">
         </div>
-
         <button onclick="saveSettings()" class="btn-full" style="background: #22c55e;">SAVE & REBOOT</button>
         <button onclick="closeSettings()" class="btn-full" style="background: #ef4444;">CLOSE</button>
     </div>
@@ -130,16 +98,15 @@
 </div>
 
 <script>
-    // --- LOGIC ---
-    let config = { apiKey: '', ownerFace: null, history: [] };
-    
+    let config = { apiKey: '', ownerFace: null, pin: '0000', history: [] };
     const SYSTEM_PROMPT = `You are Twin-Me. Identity: Software Developer, Spiritual. Tone: Friendly, Gujarati/English mix. Concise.`;
 
     window.onload = () => {
-        const saved = localStorage.getItem('twinMeMobile');
+        const saved = localStorage.getItem('twinMeSecured');
         if (saved) {
             config = JSON.parse(saved);
             document.getElementById('geminiKey').value = config.apiKey;
+            document.getElementById('backupPin').value = config.pin || '0000';
             document.getElementById('ownerData').value = config.ownerFace || '';
             if(config.ownerFace) document.getElementById('ownerPreview').src = "data:image/jpeg;base64," + config.ownerFace;
             
@@ -154,61 +121,88 @@
     async function startScan() {
         const video = document.getElementById('scanVideo');
         const status = document.getElementById('scanStatus');
+        document.getElementById('pinArea').style.display = 'none'; // Hide PIN initially
         
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
             video.srcObject = stream;
-            status.innerText = "SCANNING FACE...";
+            status.innerText = "SCANNING...";
             status.style.color = "#00d2ff";
 
             setTimeout(async () => {
-                if (!config.apiKey) {
-                    status.innerText = "API KEY MISSING";
-                    status.style.color = "red";
-                    return;
-                }
+                if (!config.apiKey) { status.innerText = "API KEY MISSING"; return; }
+                if (!config.ownerFace) { unlockApp(stream); return; } // Unlock if no face set
 
                 const canvas = document.createElement('canvas');
                 canvas.width = video.videoWidth; canvas.height = video.videoHeight;
                 canvas.getContext('2d').drawImage(video, 0, 0);
                 const currentFace = canvas.toDataURL('image/jpeg').split(',')[1];
 
-                const isMatch = await verifyIdentity(currentFace);
+                const result = await verifyIdentity(currentFace);
 
-                if (isMatch) {
-                    status.innerText = "UNLOCKED";
+                if (result.match) {
+                    status.innerText = "UNLOCKED ✅";
                     status.style.color = "#22c55e";
-                    setTimeout(() => {
-                        document.getElementById('securityLayer').style.display = 'none';
-                        stream.getTracks().forEach(t => t.stop());
-                        addBotMessage("જય શ્રી કૃષ્ણ! શું ચાલે છે?");
-                    }, 500);
+                    setTimeout(() => unlockApp(stream), 1000);
                 } else {
-                    status.innerText = "FACE MISMATCH";
+                    // Show Debug Reason
+                    status.innerText = `MISMATCH: ${result.reason}`; 
                     status.style.color = "red";
+                    // Show PIN option
+                    document.getElementById('pinArea').style.display = 'block';
                 }
-            }, 2000);
+            }, 2500);
         } catch (e) {
-            status.innerText = "CAMERA ERROR";
+            status.innerText = "CAMERA ERROR: " + e.message;
+            document.getElementById('pinArea').style.display = 'block';
         }
     }
 
     async function verifyIdentity(faceBase64) {
-        if (!config.ownerFace) return true; // Bypass if no owner set
         try {
             const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${config.apiKey}`, {
                 method: 'POST', headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
                     contents: [{ parts: [
-                        { text: "Are these two faces the same person? Reply MATCH or NO_MATCH." },
+                        { text: "Compare these two images strictly visually. Do they appear to be the same person? Reply YES or NO. If unsure, reply NO." },
                         { inline_data: { mime_type: "image/jpeg", data: config.ownerFace } },
                         { inline_data: { mime_type: "image/jpeg", data: faceBase64 } }
                     ]}] 
                 })
             });
             const d = await r.json();
-            return d.candidates[0].content.parts[0].text.includes("MATCH");
-        } catch(e) { return false; }
+            const text = d.candidates[0].content.parts[0].text.trim().toUpperCase();
+            
+            // Debug Log
+            console.log("Gemini Response:", text);
+            
+            if (text.includes("YES")) return { match: true };
+            return { match: false, reason: text }; // Return what API said
+        } catch(e) {
+            return { match: false, reason: "API Error" };
+        }
+    }
+
+    function checkPin() {
+        const input = document.getElementById('pinInput').value;
+        if (input === config.pin) {
+            document.getElementById('scanStatus').innerText = "PIN ACCEPTED ✅";
+            // Stop video
+            const video = document.getElementById('scanVideo');
+            if(video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
+            setTimeout(() => {
+                document.getElementById('securityLayer').style.display = 'none';
+                addBotMessage("PIN દ્વારા સ્વાગત છે!");
+            }, 500);
+        } else {
+            alert("WRONG PIN!");
+        }
+    }
+
+    function unlockApp(stream) {
+        if(stream) stream.getTracks().forEach(t => t.stop());
+        document.getElementById('securityLayer').style.display = 'none';
+        addBotMessage("જય શ્રી કૃષ્ણ! વેલકમ બેક.");
     }
 
     // --- SETTINGS ---
@@ -217,14 +211,14 @@
     
     function saveSettings() {
         config.apiKey = document.getElementById('geminiKey').value;
+        config.pin = document.getElementById('backupPin').value || '0000';
         config.ownerFace = document.getElementById('ownerData').value;
-        localStorage.setItem('twinMeMobile', JSON.stringify(config));
+        localStorage.setItem('twinMeSecured', JSON.stringify(config));
         location.reload();
     }
 
     async function captureOwner() {
         const video = document.getElementById('scanVideo');
-        // Ensure video is playing
         if(video.paused || !video.srcObject) {
             const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
             video.srcObject = s;
@@ -263,13 +257,10 @@
             });
             const d = await r.json();
             const reply = d.candidates[0].content.parts[0].text;
-            
             document.getElementById(tempId).remove();
             addBotMessage(reply);
             config.history.push({ role: "model", parts: [{ text: reply }] });
-        } catch(e) {
-            document.getElementById(tempId).innerText = "Error";
-        }
+        } catch(e) { document.getElementById(tempId).innerText = "Error"; }
     }
 
     function addBotMessage(text) {
