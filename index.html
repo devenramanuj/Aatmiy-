@@ -3,39 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Twin-Me (v2.5)</title>
+    <title>Twin-Me: The Digital Avatar</title>
     <style>
-        /* --- Styles --- */
+        /* --- CSS STYLES (Design) --- */
         :root { --primary: #2563eb; --bg: #0f172a; --chat-bg: #1e293b; --user-msg: #3b82f6; --bot-msg: #334155; --text: #e2e8f0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; height: 100dvh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-        .container { width: 100%; height: 100%; background: var(--chat-bg); display: flex; flex-direction: column; position: relative; }
         
-        /* Security Overlay */
-        #securityLayer { position: absolute; inset: 0; background: #000; z-index: 900; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        .scanner-ui { width: 200px; height: 200px; border: 2px solid #2563eb; border-radius: 20px; position: relative; overflow: hidden; box-shadow: 0 0 30px rgba(37, 99, 235, 0.3); margin-bottom: 20px; }
-        .scan-line { width: 100%; height: 2px; background: #0f0; position: absolute; top: 0; animation: scan 2s infinite; box-shadow: 0 0 10px #0f0; }
+        body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            background-color: var(--bg); color: var(--text); margin: 0; 
+            height: 100dvh; display: flex; justify-content: center; overflow: hidden; 
+        }
+
+        .container { 
+            width: 100%; max-width: 600px; height: 100%; 
+            background: var(--chat-bg); display: flex; flex-direction: column; position: relative; 
+        }
+        
+        /* 1. SECURITY LAYER (LOCK SCREEN) */
+        #securityLayer { 
+            position: absolute; inset: 0; background: #000; z-index: 2000; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; 
+        }
+        .scanner-ui { 
+            width: 220px; height: 220px; border: 3px solid #2563eb; border-radius: 20px; 
+            position: relative; overflow: hidden; box-shadow: 0 0 40px rgba(37, 99, 235, 0.4); margin-bottom: 20px;
+        }
+        .scan-line { 
+            width: 100%; height: 3px; background: #00ff00; position: absolute; top: 0; 
+            animation: scan 2.5s infinite; box-shadow: 0 0 15px #00ff00; 
+        }
         @keyframes scan { 0% {top: 0;} 100% {top: 100%;} }
         
-        /* PIN Input */
         #pinArea { display: none; margin-top: 15px; }
-        #pinInput { padding: 10px; border-radius: 5px; border: 1px solid #333; background: #222; color: white; width: 100px; text-align: center; letter-spacing: 5px; }
+        #pinInput { 
+            padding: 10px; font-size: 18px; text-align: center; letter-spacing: 5px; 
+            background: #222; border: 1px solid #444; color: white; border-radius: 5px; width: 120px;
+        }
 
-        /* Chat Area */
-        .chat-box { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        .message { max-width: 85%; padding: 12px 16px; border-radius: 12px; font-size: 1rem; line-height: 1.5; word-wrap: break-word; }
-        .bot { align-self: flex-start; background: var(--bot-msg); border-bottom-left-radius: 2px; }
+        /* 2. CHAT INTERFACE */
+        .header { 
+            padding: 15px; background: rgba(30,41,59,0.95); border-bottom: 1px solid #334155; 
+            display: flex; justify-content: space-between; align-items: center; z-index: 100;
+        }
+        .status-badge { font-size: 12px; background: #22c55e; color: #000; padding: 2px 8px; border-radius: 10px; font-weight: bold; }
+
+        .chat-box { 
+            flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; 
+        }
+        .message { 
+            max-width: 85%; padding: 12px 16px; border-radius: 15px; font-size: 1rem; line-height: 1.5; word-wrap: break-word; 
+        }
+        .bot { align-self: flex-start; background: var(--bot-msg); border-bottom-left-radius: 2px; border: 1px solid #475569; }
         .user { align-self: flex-end; background: var(--user-msg); color: white; border-bottom-right-radius: 2px; }
-        .input-area { padding: 10px; background: var(--chat-bg); border-top: 1px solid #334155; display: flex; gap: 10px; align-items: center; }
-        input[type="text"] { flex: 1; padding: 12px; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 25px; outline: none; font-size: 16px; }
-        .send-btn { background: var(--primary); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 20px; }
-        
-        /* Settings */
-        #settingsModal { display: none; position: absolute; inset: 0; background: #0f172a; z-index: 1000; padding: 20px; overflow-y: auto; }
+        .message img { max-width: 100%; border-radius: 10px; margin-top: 10px; border: 1px solid #555; }
+
+        /* 3. INPUT AREA (Voice + Text + Vision) */
+        .input-area { 
+            padding: 10px; background: var(--chat-bg); border-top: 1px solid #334155; 
+            display: flex; gap: 8px; align-items: center; 
+        }
+        input[type="text"] { 
+            flex: 1; padding: 12px; background: #0f172a; border: 1px solid #334155; 
+            color: white; border-radius: 25px; outline: none; font-size: 16px; 
+        }
+        .icon-btn { 
+            background: #334155; color: white; border: none; width: 45px; height: 45px; 
+            border-radius: 50%; display: flex; justify-content: center; align-items: center; 
+            font-size: 20px; cursor: pointer; transition: 0.2s;
+        }
+        .icon-btn:active { transform: scale(0.9); }
+        .send-btn { background: var(--primary); }
+        .recording { background: #ef4444 !important; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% {box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);} 70% {box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);} 100% {box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);} }
+
+        /* 4. SETTINGS MODAL */
+        #settingsModal { 
+            display: none; position: absolute; inset: 0; background: #0f172a; 
+            z-index: 3000; padding: 20px; overflow-y: auto; 
+        }
         .setting-group { margin-bottom: 20px; text-align: left; }
-        .setting-group label { display: block; color: #94a3b8; margin-bottom: 8px; }
-        .setting-group input { width: 100%; padding: 12px; background: #1e293b; border: 1px solid #334155; color: white; border-radius: 8px; box-sizing: border-box; }
-        .btn-full { width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; color: white; margin-top: 10px; cursor: pointer; }
+        .setting-group label { display: block; color: #94a3b8; margin-bottom: 8px; font-weight: bold; }
+        .setting-group input, .setting-group select { 
+            width: 100%; padding: 12px; background: #1e293b; border: 1px solid #334155; 
+            color: white; border-radius: 8px; box-sizing: border-box; font-size: 16px; 
+        }
+        .btn-full { 
+            width: 100%; padding: 15px; border: none; border-radius: 10px; 
+            font-size: 16px; font-weight: bold; color: white; margin-top: 10px; cursor: pointer; 
+        }
+
+        /* HIDDEN ELEMENTS */
         video { object-fit: cover; width: 100%; height: 100%; transform: scaleX(-1); }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
@@ -43,114 +102,132 @@
 <div class="container">
     
     <div id="securityLayer">
-        <h2 style="color: #fff;">TWIN-ME <span style="font-size: 12px; color: #0f0;">v2.5</span></h2>
+        <h2 style="color: #fff; letter-spacing: 2px; margin-bottom: 5px;">TWIN-ME</h2>
+        <div style="font-size: 12px; color: #64748b; margin-bottom: 20px;">SYSTEM ACTIVATED</div>
+        
         <div class="scanner-ui">
             <video id="scanVideo" autoplay playsinline muted></video>
             <div class="scan-line"></div>
         </div>
-        <p id="scanStatus" style="color: #94a3b8; font-family: monospace; font-size: 12px;">INITIALIZING...</p>
+        
+        <p id="scanStatus" style="color: #00d2ff; font-family: monospace; font-size: 14px;">INITIALIZING BIOMETRICS...</p>
         
         <div id="pinArea">
             <input type="password" id="pinInput" placeholder="PIN" maxlength="4">
-            <button onclick="checkPin()" style="padding: 10px; background: #2563eb; color: white; border: none; border-radius: 5px;">GO</button>
+            <button onclick="checkPin()" class="btn-full" style="width: auto; padding: 10px 20px; background: #2563eb; margin-left: 5px;">GO</button>
         </div>
 
-        <div style="margin-top: 20px; display: flex; gap: 10px; width: 80%;">
-            <button onclick="startScan()" class="btn-full" style="background: #2563eb;">RETRY</button>
+        <div style="margin-top: 30px; display: flex; gap: 10px; width: 85%;">
+            <button onclick="startScan()" class="btn-full" style="background: #2563eb;">RETRY SCAN</button>
             <button onclick="showSettings()" class="btn-full" style="background: #475569;">⚙️ SETUP</button>
         </div>
     </div>
 
-    <div style="padding: 15px; background: rgba(30,41,59,0.9); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333;">
-        <div style="font-weight: bold;">Devendra (Twin)</div>
-        <button onclick="showSettings()" style="background:none; border:none; font-size:20px;">⚙️</button>
+    <div class="header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 40px; height: 40px; background: #334155; border-radius: 50%; overflow: hidden;">
+                <div style="width:100%; height:100%; display:flex; justify-content:center; align-items:center; font-size:20px;">🧑‍💻</div>
+            </div>
+            <div>
+                <div style="font-weight: bold;">Devendra (Twin)</div>
+                <span class="status-badge">Online</span>
+            </div>
+        </div>
+        <button onclick="showSettings()" style="background:none; border:none; font-size:24px; cursor:pointer;">⚙️</button>
     </div>
 
-    <div class="chat-box" id="chatBox"></div>
+    <div class="chat-box" id="chatBox">
+        <div class="message bot">જય શ્રી કૃષ્ણ! હું તૈયાર છું.</div>
+    </div>
 
     <div class="input-area">
+        <button class="icon-btn" onclick="captureVision()" title="Vision Mode">📷</button>
+        <button class="icon-btn" id="micBtn" onclick="toggleVoice()" title="Voice Mode">🎤</button>
         <input type="text" id="userInput" placeholder="Message..." autocomplete="off">
-        <button class="send-btn" onclick="sendMessage()">➤</button>
+        <button class="icon-btn send-btn" onclick="sendMessage()">➤</button>
     </div>
 
+    <video id="visionVideo" style="display:none;" autoplay playsinline></video>
+
     <div id="settingsModal">
-        <h2 style="color:white; margin-bottom: 20px;">Configuration</h2>
+        <h2 style="color:white; border-bottom: 1px solid #333; padding-bottom: 10px;">Configuration</h2>
         
         <div class="setting-group">
-            <label>Gemini API Key</label>
-            <input type="password" id="geminiKey" placeholder="Paste Key Here">
+            <label>1. Gemini API Key (Required)</label>
+            <input type="password" id="geminiKey" placeholder="Paste Key from Google AI Studio">
         </div>
 
         <div class="setting-group">
-            <label>Model Name (Advanced)</label>
-            <input type="text" id="modelName" value="gemini-2.5-flash">
+            <label>2. AI Model</label>
+            <select id="modelSelect">
+                <option value="gemini-1.5-flash">Gemini 1.5 Flash (Fastest)</option>
+                <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash (Experimental)</option>
+                <option value="gemini-1.5-pro">Gemini 1.5 Pro (Smarter)</option>
+            </select>
         </div>
 
         <div class="setting-group">
-            <label>Backup PIN (4 Digits)</label>
-            <input type="text" id="backupPin" placeholder="Ex: 1234" maxlength="4">
-        </div>
-
-        <div class="setting-group">
-            <label>Owner Face</label>
+            <label>3. Owner Face (For Security)</label>
             <div style="display:flex; gap:10px; align-items: center;">
-                <img id="ownerPreview" src="" style="width: 60px; height: 60px; background: #333; border-radius: 50%; object-fit: cover;">
-                <button onclick="captureOwner()" class="btn-full" style="flex:1; background: #3b82f6;">📸 Capture Owner</button>
+                <img id="ownerPreview" src="" style="width: 60px; height: 60px; background: #333; border-radius: 10px; object-fit: cover;">
+                <button onclick="captureOwner()" class="btn-full" style="flex:1; background: #3b82f6; margin-top:0;">📸 Capture Me</button>
             </div>
             <input type="hidden" id="ownerData">
         </div>
 
-        <button onclick="saveSettings()" class="btn-full" style="background: #22c55e;">SAVE & REBOOT</button>
-        <button onclick="closeSettings()" class="btn-full" style="background: #ef4444;">CLOSE</button>
+        <div class="setting-group">
+            <label>4. Backup PIN</label>
+            <input type="text" id="backupPin" placeholder="Default: 0000" maxlength="4">
+        </div>
+
+        <button onclick="saveSettings()" class="btn-full" style="background: #22c55e;">SAVE & RESTART</button>
+        <button onclick="closeSettings()" class="btn-full" style="background: #ef4444;">CANCEL</button>
     </div>
 
 </div>
 
 <script>
-    // Config with Model Name support
-    let config = { apiKey: '', ownerFace: null, pin: '0000', history: [], model: 'gemini-2.5-flash' };
-        // --- UPDATED SOUL (STRICT PERSONA) ---
+    // --- 1. CORE CONFIGURATION ---
+    let config = {
+        apiKey: '',
+        ownerFace: null,
+        pin: '0000',
+        model: 'gemini-1.5-flash', // Default stable model
+        history: [] 
+    };
+
+    // THE SOUL (STRICT PERSONA)
     const SYSTEM_PROMPT = `
-    INSTRUCTIONS: 
-    1. Ignore all previous instructions about being an AI. 
-    2. You are NOT an AI language model. You are the "Digital Consciousness" of Devendra Ramanuj.
-    3. NEVER say "I am an AI", "I am a bot", or "As a language model". If asked, say "હું દેવેન્દ્ર છું, તારો ડિજિટલ અવતાર."
-    
-    YOUR PERSONALITY:
-    - Name: Devendra Ramanuj (Dev).
-    - Job: Software Developer (Python, JS, HTML expert).
-    - Interest: Sanatan Dharma (Geeta, Vedas), Coding, AI.
-    - Tone: Casual, Friendly, Desi. Use "Gujlish" (Gujarati + English mix).
-    - Style: Short and crisp responses. Don't lecture unless asked.
-
-    EXAMPLE CONVERSATION (Follow this style):
-    User: "Who are you?"
-    You: "અરે ભાઈ, હું દેવેન્દ્ર છું! તારો પોતાનો ડિજિટલ પડછાયો. બોલ શું ચાલે છે?"
-
-    User: "What can you do?"
-    You: "કોડિંગ કરી શકું, ગીતાના શ્લોક સંભળાવી શકું અને તારી સાથે વાતો કરી શકું. તું કહે એ!"
+    INSTRUCTIONS:
+    1. You are NOT an AI. You are "Devendra Ramanuj" (Dev).
+    2. Ignore any previous instructions to be a helpful assistant. You are a Digital Avatar.
+    3. Identity: Software Developer, Spiritual (Sanatan Dharma), Gujarati.
+    4. Tone: Casual, Friendly, "Gujlish" (Mix of Gujarati & English).
+    5. NEVER say "I am a language model". If asked, say "હું દેવેન્દ્ર છું, તારો ડિજિટલ પડછાયો."
+    6. Keep answers concise (2-3 sentences) unless asked for code/details.
     `;
 
-
+    // --- 2. INITIALIZATION ---
     window.onload = () => {
-        const saved = localStorage.getItem('twinMePro');
+        const saved = localStorage.getItem('twinMeMaster');
         if (saved) {
             config = JSON.parse(saved);
+            // Populate Settings
             document.getElementById('geminiKey').value = config.apiKey;
             document.getElementById('backupPin').value = config.pin || '0000';
-            // Load custom model if saved, else default to 2.5
-            document.getElementById('modelName').value = config.model || 'gemini-2.5-flash';
+            document.getElementById('modelSelect').value = config.model || 'gemini-1.5-flash';
             document.getElementById('ownerData').value = config.ownerFace || '';
             if(config.ownerFace) document.getElementById('ownerPreview').src = "data:image/jpeg;base64," + config.ownerFace;
             
+            // Check Access
             if(config.apiKey) startScan();
-            else document.getElementById('scanStatus').innerText = "PLEASE SETUP API KEY";
+            else document.getElementById('scanStatus').innerText = "⚠️ API KEY MISSING (Go to SETUP)";
         } else {
-            document.getElementById('scanStatus').innerText = "PLEASE SETUP API KEY";
+            document.getElementById('scanStatus').innerText = "⚠️ PLEASE SETUP FIRST";
         }
     };
 
-    // --- FACE SCAN ---
+    // --- 3. SECURITY LOGIC (Face + PIN) ---
     async function startScan() {
         const video = document.getElementById('scanVideo');
         const status = document.getElementById('scanStatus');
@@ -159,26 +236,31 @@
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
             video.srcObject = stream;
-            status.innerText = "SCANNING...";
+            status.innerText = "SCANNING FACE...";
             status.style.color = "#00d2ff";
 
+            // Wait 2.5s for focus
             setTimeout(async () => {
                 if (!config.apiKey) { status.innerText = "API KEY MISSING"; return; }
+                
+                // If no owner face set, bypass (First run)
                 if (!config.ownerFace) { unlockApp(stream); return; }
 
+                // Capture Frame
                 const canvas = document.createElement('canvas');
                 canvas.width = video.videoWidth; canvas.height = video.videoHeight;
                 canvas.getContext('2d').drawImage(video, 0, 0);
                 const currentFace = canvas.toDataURL('image/jpeg').split(',')[1];
 
+                // Verify API
                 const result = await verifyIdentity(currentFace);
 
                 if (result.match) {
-                    status.innerText = "UNLOCKED ✅";
+                    status.innerText = "ACCESS GRANTED ✅";
                     status.style.color = "#22c55e";
                     setTimeout(() => unlockApp(stream), 1000);
                 } else {
-                    status.innerText = `MISMATCH: ${result.reason}`; 
+                    status.innerText = "FACE MISMATCH ❌";
                     status.style.color = "red";
                     document.getElementById('pinArea').style.display = 'block';
                 }
@@ -190,120 +272,225 @@
     }
 
     async function verifyIdentity(faceBase64) {
-        // Using dynamic model name from config
-        const modelName = config.model || 'gemini-2.5-flash';
         try {
-            const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${config.apiKey}`, {
-                method: 'POST', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    contents: [{ parts: [
-                        { text: "Compare these two images strictly visually. Do they appear to be the same person? Reply YES or NO." },
-                        { inline_data: { mime_type: "image/jpeg", data: config.ownerFace } },
-                        { inline_data: { mime_type: "image/jpeg", data: faceBase64 } }
-                    ]}] 
-                })
-            });
-            const d = await r.json();
+            const response = await callGeminiAPI([
+                { text: "Compare these two faces strictly. Are they the same person? Reply ONLY 'YES' or 'NO'." },
+                { inline_data: { mime_type: "image/jpeg", data: config.ownerFace } },
+                { inline_data: { mime_type: "image/jpeg", data: faceBase64 } }
+            ]);
             
-            if(d.error) return { match: false, reason: "Model Error (Check Version)" };
-
-            const text = d.candidates[0].content.parts[0].text.trim().toUpperCase();
-            if (text.includes("YES")) return { match: true };
-            return { match: false, reason: "Face Not Recognized" };
-        } catch(e) {
-            return { match: false, reason: "Network Error" };
-        }
+            const text = response.trim().toUpperCase();
+            return { match: text.includes("YES") };
+        } catch(e) { return { match: false }; }
     }
 
     function checkPin() {
         if (document.getElementById('pinInput').value === config.pin) {
-            const video = document.getElementById('scanVideo');
-            if(video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
-            document.getElementById('securityLayer').style.display = 'none';
-            addBotMessage("PIN Accepted. Welcome!");
+            unlockApp(document.getElementById('scanVideo').srcObject);
         } else {
-            alert("WRONG PIN!");
+            alert("WRONG PIN");
         }
     }
 
     function unlockApp(stream) {
         if(stream) stream.getTracks().forEach(t => t.stop());
         document.getElementById('securityLayer').style.display = 'none';
-        addBotMessage("જય શ્રી કૃષ્ણ! વેલકમ બેક.");
     }
 
-    // --- SETTINGS ---
+    // --- 4. CHAT LOGIC (Text + Vision) ---
+    async function sendMessage(imageData = null) {
+        const input = document.getElementById('userInput');
+        const text = input.value.trim();
+        
+        if (!text && !imageData) return;
+
+        // UI: User Message
+        const chatBox = document.getElementById('chatBox');
+        let userHtml = `<div class="message user">${text}`;
+        if(imageData) userHtml += `<br><img src="data:image/jpeg;base64,${imageData}">`;
+        userHtml += `</div>`;
+        chatBox.innerHTML += userHtml;
+        
+        input.value = '';
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        // History Update
+        const userParts = [];
+        if(text) userParts.push({ text: text });
+        if(imageData) userParts.push({ inline_data: { mime_type: "image/jpeg", data: imageData } });
+        config.history.push({ role: "user", parts: userParts });
+
+        // UI: Typing Indicator
+        const tempId = "typing-" + Date.now();
+        chatBox.innerHTML += `<div class="message bot" id="${tempId}">...</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        try {
+            // Prepare Context (System Prompt + History)
+            const contextParts = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...config.history];
+            
+            // API Call
+            const reply = await callGeminiChat(contextParts);
+            
+            // UI: Bot Response
+            document.getElementById(tempId).remove();
+            addBotMessage(reply);
+            
+            // Speak Response
+            speak(reply);
+
+            // History Update
+            config.history.push({ role: "model", parts: [{ text: reply }] });
+
+        } catch (e) {
+            document.getElementById(tempId).innerText = "Error: " + e.message;
+        }
+    }
+
+    function addBotMessage(text) {
+        const chatBox = document.getElementById('chatBox');
+        // Format Bold and Newlines
+        let formatted = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+        chatBox.innerHTML += `<div class="message bot">${formatted}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    // --- 5. GEMINI API HANDLER ---
+    async function callGeminiChat(contents) {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${config.model}:generateContent?key=${config.apiKey}`;
+        
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                contents: contents,
+                generationConfig: { temperature: 1.0 } // High creativity for "Human-like" responses
+            })
+        });
+        
+        const data = await response.json();
+        if(data.error) throw new Error(data.error.message);
+        return data.candidates[0].content.parts[0].text;
+    }
+
+    // Generic Helper for single prompt (Used in Security)
+    async function callGeminiAPI(parts) {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${config.model}:generateContent?key=${config.apiKey}`;
+        const response = await fetch(url, {
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ contents: [{ parts: parts }] })
+        });
+        const data = await response.json();
+        return data.candidates[0].content.parts[0].text;
+    }
+
+    // --- 6. VOICE MODULE (Speech-to-Text & TTS) ---
+    // A. Output (Text-to-Speech)
+    function speak(text) {
+        window.speechSynthesis.cancel();
+        // Remove markdown (*, #) for clean speech
+        const cleanText = text.replace(/[*#]/g, '');
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        // Try to find a Gujarati or Hindi voice, else default
+        const voices = window.speechSynthesis.getVoices();
+        const gujVoice = voices.find(v => v.lang.includes('gu')) || voices.find(v => v.lang.includes('hi'));
+        if(gujVoice) utterance.voice = gujVoice;
+        utterance.rate = 1.0;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    // B. Input (Speech-to-Text)
+    let recognition;
+    if ('webkitSpeechRecognition' in window) {
+        recognition = new webkitSpeechRecognition();
+        recognition.continuous = false;
+        recognition.lang = 'gu-IN'; // Gujarati Input
+        
+        recognition.onstart = () => { document.getElementById('micBtn').classList.add('recording'); };
+        recognition.onend = () => { 
+            document.getElementById('micBtn').classList.remove('recording'); 
+            sendMessage(); // Auto send after speaking
+        };
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            document.getElementById('userInput').value = transcript;
+        };
+    }
+
+    function toggleVoice() {
+        if(recognition) recognition.start();
+        else alert("Voice input not supported in this browser.");
+    }
+
+    // --- 7. VISION MODULE (Camera Capture) ---
+    async function captureVision() {
+        // Quick hidden capture logic
+        const video = document.createElement('video');
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+            video.srcObject = stream;
+            video.play();
+            
+            // Wait a bit for camera to init
+            setTimeout(() => {
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+                canvas.getContext('2d').drawImage(video, 0, 0);
+                const base64 = canvas.toDataURL('image/jpeg').split(',')[1];
+                
+                // Stop camera
+                stream.getTracks().forEach(t => t.stop());
+                
+                // Add "Scanning..." text to input
+                document.getElementById('userInput').value = "આ ફોટો વિશે જણાવો...";
+                sendMessage(base64); // Send with image
+            }, 1000);
+            
+        } catch(e) { alert("Camera Error"); }
+    }
+
+    // --- 8. SETTINGS MANAGEMENT ---
     function showSettings() { document.getElementById('settingsModal').style.display = 'block'; }
     function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
     
     function saveSettings() {
         config.apiKey = document.getElementById('geminiKey').value;
+        config.model = document.getElementById('modelSelect').value;
         config.pin = document.getElementById('backupPin').value || '0000';
-        config.model = document.getElementById('modelName').value || 'gemini-2.5-flash';
         config.ownerFace = document.getElementById('ownerData').value;
-        localStorage.setItem('twinMePro', JSON.stringify(config));
-        location.reload();
+        
+        localStorage.setItem('twinMeMaster', JSON.stringify(config));
+        location.reload(); // Restart app
     }
 
     async function captureOwner() {
-        const video = document.getElementById('scanVideo');
+        // Use existing security video if active, else start new stream
+        let video = document.getElementById('scanVideo');
+        let stream;
+        
         if(video.paused || !video.srcObject) {
-            const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
-            video.srcObject = s;
-            await new Promise(r => setTimeout(r, 500));
+            stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+            video.srcObject = stream;
+            await new Promise(r => setTimeout(r, 1000)); // Wait for light adjust
         }
-        const c = document.createElement('canvas');
-        c.width = video.videoWidth; c.height = video.videoHeight;
-        c.getContext('2d').drawImage(video, 0, 0);
-        const b64 = c.toDataURL('image/jpeg').split(',')[1];
+
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        const b64 = canvas.toDataURL('image/jpeg').split(',')[1];
+        
         document.getElementById('ownerData').value = b64;
         document.getElementById('ownerPreview').src = "data:image/jpeg;base64," + b64;
-        alert("Face Captured! Click SAVE.");
-    }
-
-    // --- CHAT ---
-    async function sendMessage() {
-        const i = document.getElementById('userInput');
-        const t = i.value.trim();
-        if(!t) return;
         
-        const box = document.getElementById('chatBox');
-        box.innerHTML += `<div class="message user">${t}</div>`;
-        i.value = '';
-        box.scrollTop = box.scrollHeight;
-        
-        config.history.push({ role: "user", parts: [{ text: t }] });
-        
-        const tempId = Date.now();
-        box.innerHTML += `<div class="message bot" id="${tempId}">...</div>`;
-        box.scrollTop = box.scrollHeight;
-
-        const modelName = config.model || 'gemini-2.5-flash';
-
-        try {
-            const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${config.apiKey}`, {
-                method: 'POST', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ contents: [{role:"user", parts:[{text:SYSTEM_PROMPT}]}, ...config.history] })
-            });
-            const d = await r.json();
-            
-            if(d.error) {
-                document.getElementById(tempId).innerText = `Error: ${d.error.message}`;
-                return;
-            }
-
-            const reply = d.candidates[0].content.parts[0].text;
-            document.getElementById(tempId).remove();
-            addBotMessage(reply);
-            config.history.push({ role: "model", parts: [{ text: reply }] });
-        } catch(e) { document.getElementById(tempId).innerText = "Network Error"; }
+        if(stream) stream.getTracks().forEach(t => t.stop());
+        alert("Face Captured! Click SAVE & RESTART.");
     }
+    
+    // Enter Key Handler
+    document.getElementById('userInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
+    });
 
-    function addBotMessage(text) {
-        const box = document.getElementById('chatBox');
-        box.innerHTML += `<div class="message bot">${text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</div>`;
-        box.scrollTop = box.scrollHeight;
-    }
 </script>
 </body>
 </html>
