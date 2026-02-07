@@ -3,66 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Twin-Me (Smart Brain)</title>
+    <title>Twin-Me (Direct)</title>
     <style>
-        /* --- STYLES (SAME AS BEFORE) --- */
+        /* --- STYLES --- */
         :root { --primary: #ea580c; --bg: #0f172a; --chat-bg: #1e293b; --user-msg: #ea580c; --bot-msg: #334155; --text: #e2e8f0; }
         body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; height: 100dvh; display: flex; justify-content: center; overflow: hidden; }
         .container { width: 100%; max-width: 600px; height: 100%; background: var(--chat-bg); display: flex; flex-direction: column; position: relative; }
         
-        #securityLayer { position: absolute; inset: 0; background: #000; z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        .scanner-ui { width: 220px; height: 220px; border: 3px solid #ea580c; border-radius: 20px; position: relative; overflow: hidden; box-shadow: 0 0 40px rgba(234, 88, 12, 0.4); margin-bottom: 20px; }
-        .scan-line { width: 100%; height: 3px; background: #fb923c; position: absolute; top: 0; animation: scan 2.5s infinite; box-shadow: 0 0 15px #fb923c; }
-        @keyframes scan { 0% {top: 0;} 100% {top: 100%;} }
-        
-        #pinArea { display: none; margin-top: 15px; }
-        #pinInput { padding: 10px; font-size: 18px; text-align: center; background: #222; border: 1px solid #444; color: white; border-radius: 5px; width: 120px; }
-
+        /* CHAT INTERFACE */
         .header { padding: 15px; background: rgba(30,41,59,0.95); border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; z-index: 100; }
         .chat-box { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
         .message { max-width: 85%; padding: 12px 16px; border-radius: 15px; font-size: 1rem; line-height: 1.5; word-wrap: break-word; }
         .bot { align-self: flex-start; background: var(--bot-msg); border: 1px solid #475569; }
         .user { align-self: flex-end; background: var(--user-msg); color: white; }
+        .message img { max-width: 100%; border-radius: 10px; margin-top: 5px; }
         
+        /* INPUT AREA */
         .input-area { padding: 10px; background: var(--chat-bg); border-top: 1px solid #334155; display: flex; gap: 8px; align-items: center; }
         input[type="text"] { flex: 1; padding: 12px; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 25px; outline: none; font-size: 16px; }
         .icon-btn { background: #334155; color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 20px; border:none; cursor: pointer; }
         .send-btn { background: var(--primary); }
         .recording { background: #ef4444 !important; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% {box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);} 70% {box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);} 100% {box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);} }
 
+        /* SETTINGS MODAL */
         #settingsModal { display: none; position: absolute; inset: 0; background: #0f172a; z-index: 3000; padding: 20px; overflow-y: auto; }
         .setting-group { margin-bottom: 20px; text-align: left; }
         .setting-group label { display: block; color: #94a3b8; margin-bottom: 8px; font-weight: bold; }
         .setting-group input, .setting-group select { width: 100%; padding: 12px; background: #1e293b; border: 1px solid #334155; color: white; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
         .btn-full { width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; color: white; margin-top: 10px; cursor: pointer; }
-        
-        video { object-fit: cover; width: 100%; height: 100%; transform: scaleX(-1); }
     </style>
 </head>
 <body>
 
 <div class="container">
     
-    <div id="securityLayer">
-        <h2 style="color: #ea580c; letter-spacing: 2px;">TWIN-ME <span style="font-size: 12px; color: #fff;">BRAIN</span></h2>
-        <div class="scanner-ui">
-            <video id="scanVideo" autoplay playsinline muted></video>
-            <div class="scan-line"></div>
-        </div>
-        <p id="scanStatus" style="color: #fdba74;">Starting Camera...</p>
-        <div id="pinArea">
-            <input type="password" id="pinInput" placeholder="PIN" maxlength="4">
-            <button onclick="checkPin()" class="btn-full" style="width: auto; padding: 10px 20px; background: #ea580c; margin-left: 5px;">Go</button>
-        </div>
-        <div style="margin-top: 30px; display: flex; gap: 10px; width: 85%;">
-            <button onclick="startScan()" class="btn-full" style="background: #ea580c;">Retry</button>
-            <button onclick="showSettings()" class="btn-full" style="background: #334155;">Settings</button>
-        </div>
-    </div>
-
     <div class="header">
-        <div style="font-weight: bold;">દેવેન્દ્ર (Smart Twin)</div>
-        <button onclick="showSettings()" style="background:none; border:none; font-size:24px;">⚙️</button>
+        <div style="font-weight: bold; color: white;">દેવેન્દ્ર (Twin)</div>
+        <button onclick="showSettings()" style="background:none; border:none; font-size:24px; cursor:pointer;">⚙️</button>
     </div>
 
     <div class="chat-box" id="chatBox">
@@ -71,7 +49,7 @@
     <div class="input-area">
         <button class="icon-btn" onclick="captureVision()">📷</button>
         <button class="icon-btn" id="micBtn" onclick="toggleVoice()">🎤</button>
-        <input type="text" id="userInput" placeholder="Type here..." autocomplete="off">
+        <input type="text" id="userInput" placeholder="અહીં લખો..." autocomplete="off">
         <button class="icon-btn send-btn" onclick="sendMessage()">➤</button>
     </div>
 
@@ -86,11 +64,51 @@
         <div class="setting-group">
             <label>2. Select Model</label>
             <select id="modelSelect">
-                <option value="gemini-2.5-flash" selected>gemini-2.5-flash</option>
+                <option value="gemini-2.5-flash" selected>gemini-2.5-flash (Default)</option>
                 <option value="gemini-2.5-pro">gemini-2.5-pro</option>
-                <option value="gemini-2.0-flash-exp">gemini-2.0-flash-exp</option>
-                <option value="gemini-2.0-pro-exp">gemini-2.0-pro-exp</option>
+                <option value="gemini-2.0-flash">gemini-2.0-flash</option>
+                <option value="gemini-2.0-flash-001">gemini-2.0-flash-001</option>
+                <option value="gemini-2.0-flash-exp-image-generation">gemini-2.0-flash-exp-image-generation</option>
+                <option value="gemini-2.0-flash-lite-001">gemini-2.0-flash-lite-001</option>
+                <option value="gemini-2.0-flash-lite">gemini-2.0-flash-lite</option>
                 <option value="gemini-exp-1206">gemini-exp-1206</option>
+                <option value="gemini-2.5-flash-preview-tts">gemini-2.5-flash-preview-tts</option>
+                <option value="gemini-2.5-pro-preview-tts">gemini-2.5-pro-preview-tts</option>
+                <option value="gemma-3-1b-it">gemma-3-1b-it</option>
+                <option value="gemma-3-4b-it">gemma-3-4b-it</option>
+                <option value="gemma-3-12b-it">gemma-3-12b-it</option>
+                <option value="gemma-3-27b-it">gemma-3-27b-it</option>
+                <option value="gemma-3n-e4b-it">gemma-3n-e4b-it</option>
+                <option value="gemma-3n-e2b-it">gemma-3n-e2b-it</option>
+                <option value="gemini-flash-latest">gemini-flash-latest</option>
+                <option value="gemini-flash-lite-latest">gemini-flash-lite-latest</option>
+                <option value="gemini-pro-latest">gemini-pro-latest</option>
+                <option value="gemini-2.5-flash-lite">gemini-2.5-flash-lite</option>
+                <option value="gemini-2.5-flash-image">gemini-2.5-flash-image</option>
+                <option value="gemini-2.5-flash-preview-09-2025">gemini-2.5-flash-preview-09-2025</option>
+                <option value="gemini-2.5-flash-lite-preview-09-2025">gemini-2.5-flash-lite-preview-09-2025</option>
+                <option value="gemini-3-pro-preview">gemini-3-pro-preview</option>
+                <option value="gemini-3-flash-preview">gemini-3-flash-preview</option>
+                <option value="gemini-3-pro-image-preview">gemini-3-pro-image-preview</option>
+                <option value="nano-banana-pro-preview">nano-banana-pro-preview</option>
+                <option value="gemini-robotics-er-1.5-preview">gemini-robotics-er-1.5-preview</option>
+                <option value="gemini-2.5-computer-use-preview-10-2025">gemini-2.5-computer-use-preview-10-2025</option>
+                <option value="deep-research-pro-preview-12-2025">deep-research-pro-preview-12-2025</option>
+                <option value="gemini-embedding-001">gemini-embedding-001</option>
+                <option value="aqa">aqa</option>
+                <option value="imagen-4.0-generate-preview-06-06">imagen-4.0-generate-preview-06-06</option>
+                <option value="imagen-4.0-ultra-generate-preview-06-06">imagen-4.0-ultra-generate-preview-06-06</option>
+                <option value="imagen-4.0-generate-001">imagen-4.0-generate-001</option>
+                <option value="imagen-4.0-ultra-generate-001">imagen-4.0-ultra-generate-001</option>
+                <option value="imagen-4.0-fast-generate-001">imagen-4.0-fast-generate-001</option>
+                <option value="veo-2.0-generate-001">veo-2.0-generate-001</option>
+                <option value="veo-3.0-generate-001">veo-3.0-generate-001</option>
+                <option value="veo-3.0-fast-generate-001">veo-3.0-fast-generate-001</option>
+                <option value="veo-3.1-generate-preview">veo-3.1-generate-preview</option>
+                <option value="veo-3.1-fast-generate-preview">veo-3.1-fast-generate-preview</option>
+                <option value="gemini-2.5-flash-native-audio-latest">gemini-2.5-flash-native-audio-latest</option>
+                <option value="gemini-2.5-flash-native-audio-preview-09-2025">gemini-2.5-flash-native-audio-preview-09-2025</option>
+                <option value="gemini-2.5-flash-native-audio-preview-12-2025">gemini-2.5-flash-native-audio-preview-12-2025</option>
             </select>
         </div>
 
@@ -106,31 +124,31 @@
 
         <div class="setting-group">
              <label>Memory Control</label>
-             <button onclick="clearMemory()" class="btn-full" style="background: #ef4444; margin-top:0;">🗑️ Clear Chat History</button>
+             <button onclick="clearMemory()" class="btn-full" style="background: #ef4444; margin-top:0;">🗑️ Clear History</button>
         </div>
 
-        <button onclick="saveSettings()" class="btn-full" style="background: #16a34a;">Save & Restart</button>
-        <button onclick="closeSettings()" class="btn-full" style="background: #334155;">Close</button>
+        <button onclick="saveSettings()" class="btn-full" style="background: #16a34a;">Save & Close</button>
+        <button onclick="closeSettings()" class="btn-full" style="background: #334155;">Cancel</button>
     </div>
 </div>
 
 <script>
-    let config = { apiKey: '', elevenKey: '', voiceId: 'pNInz6obpgDQGcFmaJgB', ownerFace: null, pin: '0000', model: 'gemini-2.5-flash', history: [] };
+    let config = { apiKey: '', elevenKey: '', voiceId: 'pNInz6obpgDQGcFmaJgB', model: 'gemini-2.5-flash', history: [] };
     
-    // --- SMART SYSTEM PROMPT (Dynamic Time) ---
+    // --- SMART SYSTEM PROMPT ---
     function getSystemPrompt() {
         const now = new Date();
         return `
         INSTRUCTIONS: You are Devendra Ramanuj (Dev). 
         Identity: Developer, Spiritual, Gujarati.
         Context: Current Date/Time is ${now.toLocaleString()}.
-        Memory: You remember previous conversations.
         Language: Speak Gujarati/English mix. Concise answers.
         `;
     }
 
+    // --- INITIALIZATION ---
     window.onload = () => {
-        const saved = localStorage.getItem('twinMeSmart');
+        const saved = localStorage.getItem('twinMeDirect');
         if (saved) {
             config = JSON.parse(saved);
             document.getElementById('geminiKey').value = config.apiKey;
@@ -138,47 +156,57 @@
             document.getElementById('elevenKey').value = config.elevenKey || '';
             document.getElementById('voiceId').value = config.voiceId || 'pNInz6obpgDQGcFmaJgB';
             
-            // Load Old Chats
+            // Load History or Welcome
             if(config.history.length > 0) {
                 renderHistory();
             } else {
-                addMessageToUI("bot", "જય શ્રી કૃષ્ણ! હું તૈયાર છું. (Memory Active)");
+                addMessageToUI("bot", "જય શ્રી કૃષ્ણ! ડાયરેક્ટ લોગિન સફળ. શું ચાલે છે?");
             }
 
-            if(config.apiKey) startScan();
-            else document.getElementById('scanStatus').innerText = "⚠️ Key Missing";
+            if(!config.apiKey) showSettings();
         } else {
-            document.getElementById('scanStatus').innerText = "⚠️ Setup Required";
+            showSettings();
         }
     };
 
-    // --- MEMORY FUNCTIONS ---
-    function renderHistory() {
-        const box = document.getElementById('chatBox');
-        box.innerHTML = ''; // Clear current
-        config.history.forEach(msg => {
-            // Filter out system prompt from UI
-            if(msg.role === 'user' && msg.parts[0].text.includes("INSTRUCTIONS:")) return;
-            
-            const text = msg.parts[0].text || "";
-            const isImg = msg.parts[1]?.inline_data;
-            let role = msg.role === 'user' ? 'user' : 'bot';
-            
-            let h = `<div class="message ${role}">${text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}`;
-            if(isImg) h += `<br><span style="font-size:10px">[Image Saved]</span>`;
-            h += `</div>`;
-            box.innerHTML += h;
-        });
-        box.scrollTop = box.scrollHeight;
-    }
+    // --- CHAT LOGIC ---
+    async function sendMessage(img = null) {
+        const input = document.getElementById('userInput');
+        const text = input.value.trim();
+        if (!text && !img) return;
 
-    function clearMemory() {
-        if(confirm("Are you sure? This will delete all past conversations.")) {
-            config.history = [];
-            localStorage.setItem('twinMeSmart', JSON.stringify(config));
-            document.getElementById('chatBox').innerHTML = '';
-            alert("Memory Cleared!");
-        }
+        addMessageToUI('user', text, img);
+        input.value = '';
+
+        const parts = [];
+        if(text) parts.push({text: text});
+        if(img) parts.push({inline_data: {mime_type: "image/jpeg", data: img}});
+        config.history.push({ role: "user", parts: parts });
+
+        const tmp = "t-" + Date.now();
+        document.getElementById('chatBox').innerHTML += `<div class="message bot" id="${tmp}">...</div>`;
+        document.getElementById('chatBox').scrollTop = document.getElementById('chatBox').scrollHeight;
+
+        try {
+            const payload = [{ role: "user", parts: [{ text: getSystemPrompt() }] }, ...config.history];
+            
+            const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${config.model}:generateContent?key=${config.apiKey}`, {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ contents: payload })
+            });
+            const d = await r.json();
+            
+            if(d.error) throw new Error(d.error.message);
+            
+            const reply = d.candidates[0].content.parts[0].text;
+            document.getElementById(tmp).remove();
+            addMessageToUI('bot', reply);
+            
+            config.history.push({ role: "model", parts: [{ text: reply }] });
+            localStorage.setItem('twinMeDirect', JSON.stringify(config));
+            
+            speak(reply);
+        } catch (e) { document.getElementById(tmp).innerText = "Error: " + e.message; }
     }
 
     function addMessageToUI(role, text, img = null) {
@@ -190,81 +218,27 @@
         box.scrollTop = box.scrollHeight;
     }
 
-    // --- SECURITY ---
-    async function startScan() {
-        const video = document.getElementById('scanVideo');
-        const status = document.getElementById('scanStatus');
-        document.getElementById('pinArea').style.display = 'none';
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({video: {facingMode: "user", width:{ideal:1280}, height:{ideal:720}}});
-            video.srcObject = stream;
-            status.innerText = "Scanning..."; status.style.color = "#ea580c";
-            setTimeout(async () => {
-                if (!config.apiKey || !config.ownerFace) { unlockApp(stream); return; }
-                const cvs = document.createElement('canvas'); cvs.width=video.videoWidth; cvs.height=video.videoHeight;
-                cvs.getContext('2d').drawImage(video,0,0);
-                const face = cvs.toDataURL('image/jpeg').split(',')[1];
-                const res = await verifyIdentity(face);
-                if(res) { status.innerText="Success ✅"; status.style.color="#22c55e"; setTimeout(()=>unlockApp(stream),1000); }
-                else { status.innerText="Failed ❌"; status.style.color="red"; document.getElementById('pinArea').style.display='block'; }
-            }, 2000);
-        } catch(e) { status.innerText="Camera Error"; document.getElementById('pinArea').style.display='block'; }
-    }
-    async function verifyIdentity(face) {
-        try {
-            const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${config.model}:generateContent?key=${config.apiKey}`, {
-                method: 'POST', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ contents: [{ parts: [{ text: "Same person? YES/NO" }, { inline_data: { mime_type: "image/jpeg", data: config.ownerFace } }, { inline_data: { mime_type: "image/jpeg", data: face } }] }] })
-            });
-            const d = await r.json();
-            return d.candidates[0].content.parts[0].text.toUpperCase().includes("YES");
-        } catch(e) { return false; }
-    }
-    function checkPin() { if(document.getElementById('pinInput').value===config.pin) unlockApp(document.getElementById('scanVideo').srcObject); else alert("Wrong PIN"); }
-    function unlockApp(s) { if(s) s.getTracks().forEach(t=>t.stop()); document.getElementById('securityLayer').style.display='none'; }
-
-    // --- CHAT LOGIC ---
-    async function sendMessage(img = null) {
-        const input = document.getElementById('userInput');
-        const text = input.value.trim();
-        if (!text && !img) return;
-
-        addMessageToUI('user', text, img);
-        input.value = '';
-
-        // Add to history
-        const parts = [];
-        if(text) parts.push({text: text});
-        if(img) parts.push({inline_data: {mime_type: "image/jpeg", data: img}});
-        config.history.push({ role: "user", parts: parts });
-
-        const tmp = "t-" + Date.now();
-        document.getElementById('chatBox').innerHTML += `<div class="message bot" id="${tmp}">...</div>`;
-
-        try {
-            // Dynamic Prompt + History
-            const payload = [{ role: "user", parts: [{ text: getSystemPrompt() }] }, ...config.history];
-
-            const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${config.model}:generateContent?key=${config.apiKey}`, {
-                method: 'POST', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ contents: payload })
-            });
-            const d = await r.json();
-            const reply = d.candidates[0].content.parts[0].text;
-            
-            document.getElementById(tmp).remove();
-            addMessageToUI('bot', reply);
-            
-            config.history.push({ role: "model", parts: [{ text: reply }] });
-            
-            // SAVE TO LOCAL STORAGE (PERSISTENT MEMORY)
-            localStorage.setItem('twinMeSmart', JSON.stringify(config));
-            
-            speak(reply);
-        } catch (e) { document.getElementById(tmp).innerText = "Error"; }
+    function renderHistory() {
+        const box = document.getElementById('chatBox');
+        box.innerHTML = '';
+        config.history.forEach(msg => {
+            if(msg.role === 'user' && msg.parts[0].text.includes("INSTRUCTIONS:")) return;
+            const text = msg.parts[0].text || "";
+            const isImg = msg.parts[1]?.inline_data;
+            addMessageToUI(msg.role === 'user' ? 'user' : 'bot', text, isImg ? "saved-image" : null);
+        });
     }
 
-    // --- VOICE & SETTINGS ---
+    // --- UTILS ---
+    function clearMemory() {
+        if(confirm("Clear chat history?")) {
+            config.history = [];
+            localStorage.setItem('twinMeDirect', JSON.stringify(config));
+            document.getElementById('chatBox').innerHTML = '';
+            alert("Memory Cleared");
+        }
+    }
+
     async function speak(text) {
         const clean = text.replace(/[*#]/g, '').replace(/[\u{1F600}-\u{1F64F}]/gu, ""); 
         if (config.elevenKey) {
@@ -290,11 +264,11 @@
         config.elevenKey = document.getElementById('elevenKey').value;
         config.voiceId = document.getElementById('voiceId').value;
         config.model = document.getElementById('modelSelect').value;
-        localStorage.setItem('twinMeSmart', JSON.stringify(config));
+        localStorage.setItem('twinMeDirect', JSON.stringify(config));
         location.reload();
     }
 
-    // EXTRAS
+    // --- VISION & VOICE INPUT ---
     let rec;
     if ('webkitSpeechRecognition' in window) {
         rec = new webkitSpeechRecognition(); rec.continuous=false; rec.lang='gu-IN';
@@ -302,16 +276,20 @@
         rec.onend=()=>{document.getElementById('micBtn').classList.remove('recording'); sendMessage();};
         rec.onresult=(e)=>document.getElementById('userInput').value=e.results[0][0].transcript;
     }
-    function toggleVoice(){rec?rec.start():alert("No Voice");}
+    function toggleVoice(){rec?rec.start():alert("Voice not supported");}
+
     async function captureVision(){
-        const v=document.createElement('video'); const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}});
-        v.srcObject=s; v.play();
-        setTimeout(()=>{
-            const c=document.createElement('canvas'); c.width=v.videoWidth; c.height=v.videoHeight;
-            c.getContext('2d').drawImage(v,0,0);
-            const b64=c.toDataURL('image/jpeg').split(',')[1]; s.getTracks().forEach(t=>t.stop());
-            document.getElementById('userInput').value="Describe this..."; sendMessage(b64);
-        },1000);
+        const v=document.createElement('video');
+        try {
+            const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}});
+            v.srcObject=s; v.play();
+            setTimeout(()=>{
+                const c=document.createElement('canvas'); c.width=v.videoWidth; c.height=v.videoHeight;
+                c.getContext('2d').drawImage(v,0,0);
+                const b64=c.toDataURL('image/jpeg').split(',')[1]; s.getTracks().forEach(t=>t.stop());
+                document.getElementById('userInput').value="ફોટોનું વર્ણન કરો..."; sendMessage(b64);
+            },1000);
+        } catch(e){ alert("Camera Error"); }
     }
 
     document.getElementById('userInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
