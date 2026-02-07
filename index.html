@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Twin-Me (Secured)</title>
+    <title>Twin-Me (v2.5)</title>
     <style>
         /* --- Styles --- */
         :root { --primary: #2563eb; --bg: #0f172a; --chat-bg: #1e293b; --user-msg: #3b82f6; --bot-msg: #334155; --text: #e2e8f0; }
@@ -16,7 +16,7 @@
         .scan-line { width: 100%; height: 2px; background: #0f0; position: absolute; top: 0; animation: scan 2s infinite; box-shadow: 0 0 10px #0f0; }
         @keyframes scan { 0% {top: 0;} 100% {top: 100%;} }
         
-        /* PIN Input (Backup) */
+        /* PIN Input */
         #pinArea { display: none; margin-top: 15px; }
         #pinInput { padding: 10px; border-radius: 5px; border: 1px solid #333; background: #222; color: white; width: 100px; text-align: center; letter-spacing: 5px; }
 
@@ -43,7 +43,7 @@
 <div class="container">
     
     <div id="securityLayer">
-        <h2 style="color: #fff;">TWIN-ME</h2>
+        <h2 style="color: #fff;">TWIN-ME <span style="font-size: 12px; color: #0f0;">v2.5</span></h2>
         <div class="scanner-ui">
             <video id="scanVideo" autoplay playsinline muted></video>
             <div class="scan-line"></div>
@@ -56,7 +56,7 @@
         </div>
 
         <div style="margin-top: 20px; display: flex; gap: 10px; width: 80%;">
-            <button onclick="startScan()" class="btn-full" style="background: #2563eb;">RETRY SCAN</button>
+            <button onclick="startScan()" class="btn-full" style="background: #2563eb;">RETRY</button>
             <button onclick="showSettings()" class="btn-full" style="background: #475569;">⚙️ SETUP</button>
         </div>
     </div>
@@ -75,14 +75,22 @@
 
     <div id="settingsModal">
         <h2 style="color:white; margin-bottom: 20px;">Configuration</h2>
+        
         <div class="setting-group">
             <label>Gemini API Key</label>
             <input type="password" id="geminiKey" placeholder="Paste Key Here">
         </div>
+
+        <div class="setting-group">
+            <label>Model Name (Advanced)</label>
+            <input type="text" id="modelName" value="gemini-2.5-flash">
+        </div>
+
         <div class="setting-group">
             <label>Backup PIN (4 Digits)</label>
             <input type="text" id="backupPin" placeholder="Ex: 1234" maxlength="4">
         </div>
+
         <div class="setting-group">
             <label>Owner Face</label>
             <div style="display:flex; gap:10px; align-items: center;">
@@ -91,6 +99,7 @@
             </div>
             <input type="hidden" id="ownerData">
         </div>
+
         <button onclick="saveSettings()" class="btn-full" style="background: #22c55e;">SAVE & REBOOT</button>
         <button onclick="closeSettings()" class="btn-full" style="background: #ef4444;">CLOSE</button>
     </div>
@@ -98,15 +107,18 @@
 </div>
 
 <script>
-    let config = { apiKey: '', ownerFace: null, pin: '0000', history: [] };
+    // Config with Model Name support
+    let config = { apiKey: '', ownerFace: null, pin: '0000', history: [], model: 'gemini-2.5-flash' };
     const SYSTEM_PROMPT = `You are Twin-Me. Identity: Software Developer, Spiritual. Tone: Friendly, Gujarati/English mix. Concise.`;
 
     window.onload = () => {
-        const saved = localStorage.getItem('twinMeSecured');
+        const saved = localStorage.getItem('twinMePro');
         if (saved) {
             config = JSON.parse(saved);
             document.getElementById('geminiKey').value = config.apiKey;
             document.getElementById('backupPin').value = config.pin || '0000';
+            // Load custom model if saved, else default to 2.5
+            document.getElementById('modelName').value = config.model || 'gemini-2.5-flash';
             document.getElementById('ownerData').value = config.ownerFace || '';
             if(config.ownerFace) document.getElementById('ownerPreview').src = "data:image/jpeg;base64," + config.ownerFace;
             
@@ -121,7 +133,7 @@
     async function startScan() {
         const video = document.getElementById('scanVideo');
         const status = document.getElementById('scanStatus');
-        document.getElementById('pinArea').style.display = 'none'; // Hide PIN initially
+        document.getElementById('pinArea').style.display = 'none';
         
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
@@ -131,7 +143,7 @@
 
             setTimeout(async () => {
                 if (!config.apiKey) { status.innerText = "API KEY MISSING"; return; }
-                if (!config.ownerFace) { unlockApp(stream); return; } // Unlock if no face set
+                if (!config.ownerFace) { unlockApp(stream); return; }
 
                 const canvas = document.createElement('canvas');
                 canvas.width = video.videoWidth; canvas.height = video.videoHeight;
@@ -145,55 +157,49 @@
                     status.style.color = "#22c55e";
                     setTimeout(() => unlockApp(stream), 1000);
                 } else {
-                    // Show Debug Reason
                     status.innerText = `MISMATCH: ${result.reason}`; 
                     status.style.color = "red";
-                    // Show PIN option
                     document.getElementById('pinArea').style.display = 'block';
                 }
             }, 2500);
         } catch (e) {
-            status.innerText = "CAMERA ERROR: " + e.message;
+            status.innerText = "CAMERA ERROR";
             document.getElementById('pinArea').style.display = 'block';
         }
     }
 
     async function verifyIdentity(faceBase64) {
+        // Using dynamic model name from config
+        const modelName = config.model || 'gemini-2.5-flash';
         try {
-            const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${config.apiKey}`, {
+            const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${config.apiKey}`, {
                 method: 'POST', headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
                     contents: [{ parts: [
-                        { text: "Compare these two images strictly visually. Do they appear to be the same person? Reply YES or NO. If unsure, reply NO." },
+                        { text: "Compare these two images strictly visually. Do they appear to be the same person? Reply YES or NO." },
                         { inline_data: { mime_type: "image/jpeg", data: config.ownerFace } },
                         { inline_data: { mime_type: "image/jpeg", data: faceBase64 } }
                     ]}] 
                 })
             });
             const d = await r.json();
+            
+            if(d.error) return { match: false, reason: "Model Error (Check Version)" };
+
             const text = d.candidates[0].content.parts[0].text.trim().toUpperCase();
-            
-            // Debug Log
-            console.log("Gemini Response:", text);
-            
             if (text.includes("YES")) return { match: true };
-            return { match: false, reason: text }; // Return what API said
+            return { match: false, reason: "Face Not Recognized" };
         } catch(e) {
-            return { match: false, reason: "API Error" };
+            return { match: false, reason: "Network Error" };
         }
     }
 
     function checkPin() {
-        const input = document.getElementById('pinInput').value;
-        if (input === config.pin) {
-            document.getElementById('scanStatus').innerText = "PIN ACCEPTED ✅";
-            // Stop video
+        if (document.getElementById('pinInput').value === config.pin) {
             const video = document.getElementById('scanVideo');
             if(video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
-            setTimeout(() => {
-                document.getElementById('securityLayer').style.display = 'none';
-                addBotMessage("PIN દ્વારા સ્વાગત છે!");
-            }, 500);
+            document.getElementById('securityLayer').style.display = 'none';
+            addBotMessage("PIN Accepted. Welcome!");
         } else {
             alert("WRONG PIN!");
         }
@@ -212,8 +218,9 @@
     function saveSettings() {
         config.apiKey = document.getElementById('geminiKey').value;
         config.pin = document.getElementById('backupPin').value || '0000';
+        config.model = document.getElementById('modelName').value || 'gemini-2.5-flash';
         config.ownerFace = document.getElementById('ownerData').value;
-        localStorage.setItem('twinMeSecured', JSON.stringify(config));
+        localStorage.setItem('twinMePro', JSON.stringify(config));
         location.reload();
     }
 
@@ -250,17 +257,25 @@
         box.innerHTML += `<div class="message bot" id="${tempId}">...</div>`;
         box.scrollTop = box.scrollHeight;
 
+        const modelName = config.model || 'gemini-2.5-flash';
+
         try {
-            const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${config.apiKey}`, {
+            const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${config.apiKey}`, {
                 method: 'POST', headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ contents: [{role:"user", parts:[{text:SYSTEM_PROMPT}]}, ...config.history] })
             });
             const d = await r.json();
+            
+            if(d.error) {
+                document.getElementById(tempId).innerText = `Error: ${d.error.message}`;
+                return;
+            }
+
             const reply = d.candidates[0].content.parts[0].text;
             document.getElementById(tempId).remove();
             addBotMessage(reply);
             config.history.push({ role: "model", parts: [{ text: reply }] });
-        } catch(e) { document.getElementById(tempId).innerText = "Error"; }
+        } catch(e) { document.getElementById(tempId).innerText = "Network Error"; }
     }
 
     function addBotMessage(text) {
