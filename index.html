@@ -3,25 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Twin-Me Pro (v3.0)</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Twin-Me (Ultimate AI)</title>
     <style>
-        /* --- STYLES --- */
-        :root { --primary: #ea580c; --bg: #0f172a; --chat-bg: #1e293b; --user-msg: #ea580c; --bot-msg: #334155; --text: #e2e8f0; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; height: 100dvh; display: flex; justify-content: center; overflow: hidden; transition: background 0.3s; }
-        .container { width: 100%; max-width: 600px; height: 100%; background: var(--chat-bg); display: flex; flex-direction: column; position: relative; transition: background 0.3s; }
+        /* --- THEME & COLORS --- */
+        :root { --primary: #ea580c; --bg: #0f172a; --chat-bg: #1e293b; --user-msg: #ea580c; --bot-msg: #334155; --text: #e2e8f0; --code-bg: #0d1117; }
         
-        /* CHAT INTERFACE */
-        .header { padding: 15px; background: rgba(30,41,59,0.95); border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; z-index: 100; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; height: 100dvh; display: flex; justify-content: center; overflow: hidden; }
+        .container { width: 100%; max-width: 600px; height: 100%; background: var(--chat-bg); display: flex; flex-direction: column; position: relative; }
+        
+        /* HEADER */
+        .header { padding: 15px; background: rgba(15, 23, 42, 0.95); border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; z-index: 100; backdrop-filter: blur(10px); }
+        .status-badge { font-size: 10px; background: #22c55e; color: #000; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: 5px; }
+
+        /* CHAT AREA */
         .chat-box { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
-        .message { max-width: 85%; padding: 12px 16px; border-radius: 15px; font-size: 1rem; line-height: 1.5; word-wrap: break-word; }
-        .bot { align-self: flex-start; background: var(--bot-msg); border: 1px solid #475569; }
-        .user { align-self: flex-end; background: var(--user-msg); color: white; }
-        .message img { max-width: 100%; border-radius: 10px; margin-top: 5px; }
-        .file-badge { background: #334155; padding: 5px 10px; border-radius: 5px; font-size: 0.8rem; display: inline-block; margin-bottom: 5px; border: 1px solid #475569; }
+        
+        .message { max-width: 85%; padding: 12px 16px; border-radius: 15px; font-size: 0.95rem; line-height: 1.6; word-wrap: break-word; position: relative; }
+        .bot { align-self: flex-start; background: var(--bot-msg); border: 1px solid #475569; border-bottom-left-radius: 2px; }
+        .user { align-self: flex-end; background: var(--user-msg); color: white; border-bottom-right-radius: 2px; }
+        
+        /* CODE BLOCK STYLING */
+        pre { background: var(--code-bg); padding: 10px; border-radius: 8px; overflow-x: auto; border: 1px solid #30363d; margin: 10px 0; }
+        code { font-family: 'Consolas', 'Courier New', monospace; font-size: 0.85rem; color: #58a6ff; }
+        .source-link { display: block; font-size: 0.75rem; color: #94a3b8; margin-top: 5px; text-decoration: none; border-top: 1px solid #475569; padding-top: 5px; }
 
         /* INPUT AREA */
         .input-area { padding: 10px; background: var(--chat-bg); border-top: 1px solid #334155; display: flex; gap: 8px; align-items: center; }
-        input[type="text"] { flex: 1; padding: 12px; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 25px; outline: none; font-size: 16px; }
+        input[type="text"] { flex: 1; padding: 12px; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 25px; outline: none; font-size: 16px; transition: 0.3s; }
+        input:focus { border-color: var(--primary); }
         .icon-btn { background: #334155; color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 20px; border:none; cursor: pointer; transition: 0.2s; }
         .icon-btn:active { transform: scale(0.9); }
         .send-btn { background: var(--primary); }
@@ -31,20 +42,24 @@
         /* SETTINGS MODAL */
         #settingsModal { display: none; position: absolute; inset: 0; background: #0f172a; z-index: 3000; padding: 20px; overflow-y: auto; }
         .setting-group { margin-bottom: 20px; text-align: left; }
-        .setting-group label { display: block; color: #94a3b8; margin-bottom: 8px; font-weight: bold; }
-        .setting-group input, .setting-group select { width: 100%; padding: 12px; background: #1e293b; border: 1px solid #334155; color: white; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        .setting-group label { display: block; color: #ea580c; margin-bottom: 8px; font-weight: bold; font-size: 0.9rem; }
+        .setting-group input, .setting-group select, .setting-group textarea { width: 100%; padding: 12px; background: #1e293b; border: 1px solid #334155; color: white; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
         .btn-full { width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; color: white; margin-top: 10px; cursor: pointer; }
         
-        /* HIDDEN FILE INPUT */
+        /* HIDDEN ELEMENTS */
         #fileInput { display: none; }
+        video { display:none; }
     </style>
 </head>
 <body>
 
-<div class="container" id="appContainer">
+<div class="container">
     
     <div class="header">
-        <div style="font-weight: bold; color: white;">દેવેન્દ્ર (Twin Pro)</div>
+        <div style="display: flex; flex-direction: column;">
+            <div style="font-weight: bold; color: white; font-size: 1.1rem;">દેવેન્દ્ર (Twin AI)</div>
+            <div style="font-size: 0.75rem; color: #94a3b8;">Online <span id="modelDisplay"></span></div>
+        </div>
         <button onclick="showSettings()" style="background:none; border:none; font-size:24px; cursor:pointer;">⚙️</button>
     </div>
 
@@ -54,43 +69,47 @@
         <button class="icon-btn" onclick="document.getElementById('fileInput').click()">📎</button>
         <button class="icon-btn" onclick="captureVision()">📷</button>
         <button class="icon-btn" id="micBtn" onclick="toggleVoice()">🎤</button>
-        <input type="text" id="userInput" placeholder="અહીં લખો..." autocomplete="off">
+        <input type="text" id="userInput" placeholder="લખો..." autocomplete="off">
         <button class="icon-btn send-btn" onclick="sendMessage()">➤</button>
     </div>
 
     <input type="file" id="fileInput" onchange="handleFileUpload(this)">
 
     <div id="settingsModal">
-        <h2 style="color:#ea580c; border-bottom: 1px solid #334155; padding-bottom: 10px;">Configuration</h2>
+        <h2 style="color:#ea580c; border-bottom: 1px solid #334155; padding-bottom: 10px;">Twin Configuration</h2>
         
         <div class="setting-group">
-            <label>1. Gemini API Key</label>
-            <input type="password" id="geminiKey" placeholder="Paste Key Here">
+            <label>1. Gemini API Key (Required)</label>
+            <input type="password" id="geminiKey" placeholder="AI Studio Key">
         </div>
 
         <div class="setting-group">
-            <label>2. Select Model</label>
+            <label>2. AI Model (Google Search Enabled)</label>
             <select id="modelSelect">
-                <option value="gemini-2.5-flash" selected>gemini-2.5-flash</option>
-                <option value="gemini-2.5-pro">gemini-2.5-pro</option>
-                <option value="gemini-2.0-flash">gemini-2.0-flash</option>
-                <option value="gemini-2.0-flash-exp">gemini-2.0-flash-exp</option>
+                <option value="gemini-2.0-flash-exp" selected>gemini-2.0-flash-exp (Best for Search)</option>
+                <option value="gemini-2.5-flash">gemini-2.5-flash</option>
                 <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+                <option value="gemini-2.0-flash">gemini-2.0-flash</option>
             </select>
         </div>
 
         <div class="setting-group">
-            <label>3. ElevenLabs Key (Optional)</label>
-            <input type="password" id="elevenKey">
+            <label>3. System Instructions (Persona)</label>
+            <textarea id="systemPrompt" rows="3">You are Devendra Ramanuj. Speak Gujarati/English mix. Concise answers.</textarea>
         </div>
 
         <div class="setting-group">
-            <label>4. Voice ID</label>
+            <label>4. ElevenLabs Key (Optional)</label>
+            <input type="password" id="elevenKey" placeholder="For Realistic Voice">
+        </div>
+        
+        <div class="setting-group">
+            <label>5. Voice ID</label>
             <input type="text" id="voiceId" value="pNInz6obpgDQGcFmaJgB">
         </div>
 
         <div class="setting-group">
-             <button onclick="clearMemory()" class="btn-full" style="background: #ef4444; margin-top:0;">🗑️ Clear History</button>
+             <button onclick="clearMemory()" class="btn-full" style="background: #ef4444; margin-top:0;">🗑️ Clear Chat History</button>
         </div>
 
         <button onclick="saveSettings()" class="btn-full" style="background: #16a34a;">Save & Close</button>
@@ -99,35 +118,32 @@
 </div>
 
 <script>
-    let config = { apiKey: '', elevenKey: '', voiceId: 'pNInz6obpgDQGcFmaJgB', model: 'gemini-2.5-flash', history: [] };
-    let currentFile = null; // Stores uploaded file content
-
-    // --- SMART SYSTEM PROMPT ---
-    function getSystemPrompt() {
-        const now = new Date();
-        return `
-        INSTRUCTIONS: You are Devendra Ramanuj (Dev). 
-        Identity: Developer, Spiritual, Gujarati.
-        Context: Current Date/Time is ${now.toLocaleString()}.
-         Capabilities: 
-        1. Answer questions based on uploaded files.
-        2. Execute commands (Dark Mode, Light Mode, Clear Chat).
-        Language: Speak Gujarati/English mix. Concise answers.
-        `;
-    }
+    // --- CONFIGURATION ---
+    let config = { 
+        apiKey: '', 
+        elevenKey: '', 
+        voiceId: 'pNInz6obpgDQGcFmaJgB', 
+        model: 'gemini-2.0-flash-exp', 
+        systemPrompt: 'You are Devendra Ramanuj. Speak Gujarati/English mix.',
+        history: [] 
+    };
+    let currentFile = null;
 
     // --- INITIALIZATION ---
     window.onload = () => {
-        const saved = localStorage.getItem('twinMeProV3');
+        const saved = localStorage.getItem('twinMeUltV4');
         if (saved) {
             config = JSON.parse(saved);
             document.getElementById('geminiKey').value = config.apiKey;
-            document.getElementById('modelSelect').value = config.model || 'gemini-2.5-flash';
+            document.getElementById('modelSelect').value = config.model || 'gemini-2.0-flash-exp';
+            document.getElementById('systemPrompt').value = config.systemPrompt || 'You are Devendra Ramanuj. Speak Gujarati/English mix.';
             document.getElementById('elevenKey').value = config.elevenKey || '';
             document.getElementById('voiceId').value = config.voiceId || 'pNInz6obpgDQGcFmaJgB';
             
+            document.getElementById('modelDisplay').innerText = `| ${config.model.replace('gemini-', '')}`;
+
             if(config.history.length > 0) renderHistory();
-            else addMessageToUI("bot", "જય શ્રી કૃષ્ણ! હું તૈયાર છું. ફાઈલ મોકલો કે ઓર્ડર આપો!");
+            else addMessageToUI("bot", "જય શ્રી કૃષ્ણ! હું લાઈવ છું. ઈન્ટરનેટ સર્ચ, ફાઈલ, કોડ - બધું તૈયાર છે.");
 
             if(!config.apiKey) showSettings();
         } else {
@@ -135,162 +151,93 @@
         }
     };
 
-    // --- FILE UPLOAD LOGIC ---
-    function handleFileUpload(input) {
-        const file = input.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            // Determine file type handling
-            const content = e.target.result;
-            currentFile = {
-                name: file.name,
-                data: content.split(',')[1] || content, // Base64 for images, text for others
-                mime: file.type
-            };
-            
-            // Show badge in input
-            document.getElementById('userInput').value = `[File: ${file.name}] attached. Analyze this...`;
-            alert(`File "${file.name}" ready! Click Send.`);
-        };
-
-        if (file.type.startsWith('image/')) reader.readAsDataURL(file);
-        else reader.readAsText(file); // Read code/text files as text
-    }
-
-    // --- CHAT LOGIC (With Commands & Files) ---
+    // --- MAIN CHAT LOGIC (WITH GOOGLE SEARCH) ---
     async function sendMessage(img = null) {
         const input = document.getElementById('userInput');
         let text = input.value.trim();
         
         if (!text && !img && !currentFile) return;
 
-        // Check for Local Commands (Automation)
-        if (checkLocalCommands(text)) {
-            input.value = '';
-            return;
-        }
+        // Check Local Commands
+        if (checkLocalCommands(text)) { input.value = ''; return; }
 
-        // Prepare UI Message
+        // UI Update
         addMessageToUI('user', text, img || (currentFile?.type?.startsWith('image') ? currentFile.data : null));
         input.value = '';
 
-        // Prepare API Payload
+        // Prepare History Payload
         const userParts = [{ text: text }];
-        
-        // Attach Image (Camera)
         if(img) userParts.push({ inline_data: { mime_type: "image/jpeg", data: img } });
-        
-        // Attach File (Upload)
         if(currentFile) {
-            if(currentFile.mime.startsWith('image/')) {
-                userParts.push({ inline_data: { mime_type: currentFile.mime, data: currentFile.data } });
-            } else {
-                // For text/code files, add as text context
-                userParts.push({ text: `\n\n[FILE CONTENT: ${currentFile.name}]\n${currentFile.data}\n[END FILE]\n` });
-            }
-            currentFile = null; // Reset after sending
+            if(currentFile.mime.startsWith('image/')) userParts.push({ inline_data: { mime_type: currentFile.mime, data: currentFile.data } });
+            else userParts.push({ text: `\n\n[FILE: ${currentFile.name}]\n${currentFile.data}\n` });
+            currentFile = null;
         }
 
         config.history.push({ role: "user", parts: userParts });
 
+        // Show Typing with "Searching" hint
         const tmp = "t-" + Date.now();
-        document.getElementById('chatBox').innerHTML += `<div class="message bot" id="${tmp}">...</div>`;
-        document.getElementById('chatBox').scrollTop = document.getElementById('chatBox').scrollHeight;
+        document.getElementById('chatBox').innerHTML += `<div class="message bot" id="${tmp}">Thinking...</div>`;
+        scrollToBottom();
 
         try {
-            const payload = [{ role: "user", parts: [{ text: getSystemPrompt() }] }, ...config.history];
+            const now = new Date();
+            const dynamicPrompt = `${config.systemPrompt} Current Time: ${now.toLocaleString()}.`;
+            
+            const payload = {
+                contents: [{ role: "user", parts: [{ text: dynamicPrompt }] }, ...config.history],
+                // GOOGLE SEARCH ENABLED
+                tools: [{ google_search: {} }] 
+            };
             
             const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${config.model}:generateContent?key=${config.apiKey}`, {
                 method: 'POST', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ contents: payload })
+                body: JSON.stringify(payload)
             });
             const d = await r.json();
             
             if(d.error) throw new Error(d.error.message);
             
-            const reply = d.candidates[0].content.parts[0].text;
-            document.getElementById(tmp).remove();
+            let reply = d.candidates[0].content.parts[0].text;
             
-            // Check for AI Commands in response (e.g. if AI wants to clear screen)
-            if(!checkLocalCommands(reply)) {
-                addMessageToUI('bot', reply);
-                speak(reply);
+            // Check for Grounding (Search Sources)
+            const grounding = d.candidates[0].groundingMetadata;
+            if(grounding && grounding.searchEntryPoint) {
+                 reply += `\n\n🔍 ${grounding.searchEntryPoint.renderedContent}`;
             }
 
-            config.history.push({ role: "model", parts: [{ text: reply }] });
-            localStorage.setItem('twinMeProV3', JSON.stringify(config));
+            document.getElementById(tmp).remove();
+            addMessageToUI('bot', reply);
             
+            config.history.push({ role: "model", parts: [{ text: reply }] });
+            localStorage.setItem('twinMeUltV4', JSON.stringify(config));
+            
+            speak(reply);
+
         } catch (e) { document.getElementById(tmp).innerText = "Error: " + e.message; }
     }
 
-    // --- AUTOMATION (COMMANDS) ---
-        // --- ADVANCED AUTOMATION (APPS & COMMANDS) ---
-    function checkLocalCommands(text) {
-        const lower = text.toLowerCase();
-        
-        // 1. App Opening (Deep Links)
-        if (lower.includes("open whatsapp") || lower.includes("વોટ્સએપ")) {
-            addMessageToUI('bot', "WhatsApp ખોલી રહ્યો છું...");
-            window.location.href = "whatsapp://"; // Opens App directly
-            return true;
-        }
-        
-        if (lower.includes("open youtube") || lower.includes("યુટ્યુબ")) {
-            addMessageToUI('bot', "YouTube શરૂ કરું છું...");
-            window.location.href = "vnd.youtube://"; // Opens App directly
-            return true;
-        }
-        
-        if (lower.includes("call") || lower.includes("કોલ કર") || lower.includes("phone")) {
-            addMessageToUI('bot', "ડાયલર ખોલું છું...");
-            window.location.href = "tel:"; // Opens Phone Dialer
-            return true;
-        }
-
-        if (lower.includes("map") || lower.includes("નકશો")) {
-            addMessageToUI('bot', "Google Maps ખોલું છું...");
-            window.location.href = "geo:0,0?q="; // Opens Maps
-            return true;
-        }
-
-        // 2. Google Search (જો બીજું કઈ ન મળે તો સર્ચ કરે)
-        if (lower.startsWith("search") || lower.startsWith("સર્ચ")) {
-            let query = text.replace("search", "").replace("સર્ચ", "").trim();
-            addMessageToUI('bot', `ગુગલ પર શોધી રહ્યો છું: ${query}`);
-            window.open(`https://www.google.com/search?q=${query}`, '_blank');
-            return true;
-        }
-
-        // 3. UI Themes (Old Commands)
-        if (lower.includes("dark mode") || lower.includes("ડાર્ક")) {
-            document.documentElement.style.setProperty('--bg', '#000000');
-            document.documentElement.style.setProperty('--chat-bg', '#111111');
-            addMessageToUI('bot', "Dark mode activated 🌑");
-            return true;
-        }
-        if (lower.includes("light mode") || lower.includes("લાઈટ")) {
-            document.documentElement.style.setProperty('--bg', '#f0f9ff');
-            document.documentElement.style.setProperty('--chat-bg', '#ffffff');
-            addMessageToUI('bot', "Light mode activated ☀️");
-            return true;
-        }
-        if (lower.includes("clear") || lower.includes("સાફ")) {
-            clearMemory();
-            return true;
-        }
-
-        return false; // જો આમાંથી કઈ ન હોય, તો જ AI જવાબ આપશે
-    }
-
-
+    // --- UI RENDERING (CODE HIGHLIGHTING) ---
     function addMessageToUI(role, text, img = null) {
         const box = document.getElementById('chatBox');
-        let h = `<div class="message ${role}">${text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}`;
+        
+        // Basic Formatting (Bold, Code Blocks)
+        let formatted = text
+            .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>') // Code Blocks
+            .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>') // Bold
+            .replace(/\n/g, '<br>'); // Newlines
+
+        let h = `<div class="message ${role}">${formatted}`;
         if(img) h += `<br><img src="data:image/jpeg;base64,${img}">`;
         h += `</div>`;
+        
         box.innerHTML += h;
+        scrollToBottom();
+    }
+
+    function scrollToBottom() {
+        const box = document.getElementById('chatBox');
         box.scrollTop = box.scrollHeight;
     }
 
@@ -299,25 +246,44 @@
         box.innerHTML = '';
         config.history.forEach(msg => {
             if(msg.role === 'user' && msg.parts[0].text.includes("INSTRUCTIONS:")) return;
-            // Don't show large file content in history UI
             let text = msg.parts[0].text || "";
-            if(text.includes("[FILE CONTENT:")) text = "[File Uploaded]";
-            
-            const isImg = msg.parts[1]?.inline_data;
-            addMessageToUI(msg.role === 'user' ? 'user' : 'bot', text, isImg ? "saved-image" : null);
+            if(text.includes("[FILE:")) text = "[File Attached]";
+            addMessageToUI(msg.role === 'user' ? 'user' : 'bot', text);
         });
     }
 
-    // --- UTILS ---
-    function clearMemory() {
-        config.history = [];
-        localStorage.setItem('twinMeProV3', JSON.stringify(config));
-        document.getElementById('chatBox').innerHTML = '';
-        addMessageToUI('bot', "મેમરી સાફ થઈ ગઈ! 🧹");
+    // --- FILE UPLOAD ---
+    function handleFileUpload(input) {
+        const file = input.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            currentFile = { name: file.name, data: e.target.result.split(',')[1] || e.target.result, mime: file.type };
+            document.getElementById('userInput').value = `[File: ${file.name}] attached.`;
+        };
+        if (file.type.startsWith('image/')) reader.readAsDataURL(file); else reader.readAsText(file);
     }
 
+    // --- COMMANDS ---
+    function checkLocalCommands(text) {
+        const lower = text.toLowerCase();
+        if (lower.includes("clear chat")) { clearMemory(); return true; }
+        if (lower.includes("open whatsapp")) { window.location.href = "whatsapp://"; return true; }
+        if (lower.startsWith("search ")) { 
+            window.open(`https://www.google.com/search?q=${text.replace("search ", "")}`, '_blank'); return true; 
+        }
+        return false;
+    }
+
+    // --- VOICE & SETTINGS ---
+    function clearMemory() {
+        if(confirm("Delete all history?")) {
+            config.history = []; localStorage.setItem('twinMeUltV4', JSON.stringify(config));
+            document.getElementById('chatBox').innerHTML = '';
+        }
+    }
     async function speak(text) {
-        const clean = text.replace(/[*#]/g, '').replace(/[\u{1F600}-\u{1F64F}]/gu, ""); 
+        const clean = text.replace(/[*#`]/g, '').replace(/[\u{1F600}-\u{1F64F}]/gu, ""); 
         if (config.elevenKey) {
             try {
                 const r = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${config.voiceId}`, {
@@ -329,11 +295,10 @@
         }
         window.speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(clean);
-        const v = window.speechSynthesis.getVoices().find(v=>v.lang.includes('gu')) || window.speechSynthesis.getVoices().find(v=>v.lang.includes('hi'));
-        if(v) u.voice = v;
+        u.voice = window.speechSynthesis.getVoices().find(v=>v.lang.includes('gu')) || window.speechSynthesis.getVoices().find(v=>v.lang.includes('hi'));
         window.speechSynthesis.speak(u);
     }
-
+    
     function showSettings() { document.getElementById('settingsModal').style.display = 'block'; }
     function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
     function saveSettings() {
@@ -341,11 +306,12 @@
         config.elevenKey = document.getElementById('elevenKey').value;
         config.voiceId = document.getElementById('voiceId').value;
         config.model = document.getElementById('modelSelect').value;
-        localStorage.setItem('twinMeProV3', JSON.stringify(config));
+        config.systemPrompt = document.getElementById('systemPrompt').value;
+        localStorage.setItem('twinMeUltV4', JSON.stringify(config));
         location.reload();
     }
 
-    // --- VISION & VOICE INPUT ---
+    // --- VISION & MIC ---
     let rec;
     if ('webkitSpeechRecognition' in window) {
         rec = new webkitSpeechRecognition(); rec.continuous=false; rec.lang='gu-IN';
@@ -364,11 +330,10 @@
                 const c=document.createElement('canvas'); c.width=v.videoWidth; c.height=v.videoHeight;
                 c.getContext('2d').drawImage(v,0,0);
                 const b64=c.toDataURL('image/jpeg').split(',')[1]; s.getTracks().forEach(t=>t.stop());
-                document.getElementById('userInput').value="ફોટોનું વર્ણન કરો..."; sendMessage(b64);
+                document.getElementById('userInput').value="Describe this..."; sendMessage(b64);
             },1000);
         } catch(e){ alert("Camera Error"); }
     }
-
     document.getElementById('userInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
 </script>
 </body>
