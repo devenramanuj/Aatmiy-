@@ -3,36 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Twin-Me (Ultimate AI)</title>
+    <title>Twin-Me (Gemini 2.5)</title>
     <style>
-        /* --- THEME & COLORS --- */
+        /* --- STYLES --- */
         :root { --primary: #ea580c; --bg: #0f172a; --chat-bg: #1e293b; --user-msg: #ea580c; --bot-msg: #334155; --text: #e2e8f0; --code-bg: #0d1117; }
         
         body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; height: 100dvh; display: flex; justify-content: center; overflow: hidden; }
         .container { width: 100%; max-width: 600px; height: 100%; background: var(--chat-bg); display: flex; flex-direction: column; position: relative; }
         
         /* HEADER */
-        .header { padding: 15px; background: rgba(15, 23, 42, 0.95); border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; z-index: 100; backdrop-filter: blur(10px); }
-        .status-badge { font-size: 10px; background: #22c55e; color: #000; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: 5px; }
-
+        .header { padding: 15px; background: rgba(15, 23, 42, 0.95); border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; z-index: 100; }
+        
         /* CHAT AREA */
         .chat-box { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
-        
-        .message { max-width: 85%; padding: 12px 16px; border-radius: 15px; font-size: 0.95rem; line-height: 1.6; word-wrap: break-word; position: relative; }
+        .message { max-width: 85%; padding: 12px 16px; border-radius: 15px; font-size: 0.95rem; line-height: 1.6; word-wrap: break-word; }
         .bot { align-self: flex-start; background: var(--bot-msg); border: 1px solid #475569; border-bottom-left-radius: 2px; }
         .user { align-self: flex-end; background: var(--user-msg); color: white; border-bottom-right-radius: 2px; }
         
         /* CODE BLOCK STYLING */
         pre { background: var(--code-bg); padding: 10px; border-radius: 8px; overflow-x: auto; border: 1px solid #30363d; margin: 10px 0; }
         code { font-family: 'Consolas', 'Courier New', monospace; font-size: 0.85rem; color: #58a6ff; }
-        .source-link { display: block; font-size: 0.75rem; color: #94a3b8; margin-top: 5px; text-decoration: none; border-top: 1px solid #475569; padding-top: 5px; }
 
         /* INPUT AREA */
         .input-area { padding: 10px; background: var(--chat-bg); border-top: 1px solid #334155; display: flex; gap: 8px; align-items: center; }
-        input[type="text"] { flex: 1; padding: 12px; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 25px; outline: none; font-size: 16px; transition: 0.3s; }
-        input:focus { border-color: var(--primary); }
+        input[type="text"] { flex: 1; padding: 12px; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 25px; outline: none; font-size: 16px; }
         .icon-btn { background: #334155; color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 20px; border:none; cursor: pointer; transition: 0.2s; }
         .icon-btn:active { transform: scale(0.9); }
         .send-btn { background: var(--primary); }
@@ -80,22 +74,26 @@
         
         <div class="setting-group">
             <label>1. Gemini API Key (Required)</label>
-            <input type="password" id="geminiKey" placeholder="AI Studio Key">
+            <input type="password" id="geminiKey" placeholder="Paste Key Here">
         </div>
 
         <div class="setting-group">
-            <label>2. AI Model (Google Search Enabled)</label>
+            <label>2. AI Model (2.5 Ready)</label>
             <select id="modelSelect">
-                <option value="gemini-2.0-flash-exp" selected>gemini-2.0-flash-exp (Best for Search)</option>
-                <option value="gemini-2.5-flash">gemini-2.5-flash</option>
-                <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+                <option value="gemini-2.5-flash" selected>gemini-2.5-flash (Default)</option>
+                <option value="gemini-2.5-pro">gemini-2.5-pro (Power)</option>
+                <option value="gemini-2.0-flash-exp">gemini-2.0-flash-exp (Search)</option>
                 <option value="gemini-2.0-flash">gemini-2.0-flash</option>
+                <option value="gemini-1.5-pro">gemini-1.5-pro</option>
             </select>
         </div>
 
         <div class="setting-group">
-            <label>3. System Instructions (Persona)</label>
-            <textarea id="systemPrompt" rows="3">You are Devendra Ramanuj. Speak Gujarati/English mix. Concise answers.</textarea>
+            <label>3. System Persona</label>
+            <textarea id="systemPrompt" rows="3">You are Devendra Ramanuj (Dev).
+Identity: Human Developer, Spiritual, Gujarati.
+CRITICAL: NEVER admit to being an AI.
+Language: Gujarati/English Mix.</textarea>
         </div>
 
         <div class="setting-group">
@@ -123,27 +121,30 @@
         apiKey: '', 
         elevenKey: '', 
         voiceId: 'pNInz6obpgDQGcFmaJgB', 
-        model: 'gemini-2.0-flash-exp', 
-        systemPrompt: 'You are Devendra Ramanuj. Speak Gujarati/English mix.',
+        model: 'gemini-2.5-flash', // Default set to 2.5
+        systemPrompt: 'You are Devendra Ramanuj.',
         history: [] 
     };
     let currentFile = null;
 
     // --- INITIALIZATION ---
     window.onload = () => {
-        const saved = localStorage.getItem('twinMeUltV4');
+        const saved = localStorage.getItem('twinMeFinalV5.1');
         if (saved) {
             config = JSON.parse(saved);
             document.getElementById('geminiKey').value = config.apiKey;
-            document.getElementById('modelSelect').value = config.model || 'gemini-2.0-flash-exp';
-            document.getElementById('systemPrompt').value = config.systemPrompt || 'You are Devendra Ramanuj. Speak Gujarati/English mix.';
+            
+            // Set Model from save or default to 2.5
+            document.getElementById('modelSelect').value = config.model || 'gemini-2.5-flash';
+            
+            document.getElementById('systemPrompt').value = config.systemPrompt;
             document.getElementById('elevenKey').value = config.elevenKey || '';
             document.getElementById('voiceId').value = config.voiceId || 'pNInz6obpgDQGcFmaJgB';
             
-            document.getElementById('modelDisplay').innerText = `| ${config.model.replace('gemini-', '')}`;
+            document.getElementById('modelDisplay').innerText = `| ${config.model}`;
 
             if(config.history.length > 0) renderHistory();
-            else addMessageToUI("bot", "જય શ્રી કૃષ્ણ! હું લાઈવ છું. ઈન્ટરનેટ સર્ચ, ફાઈલ, કોડ - બધું તૈયાર છે.");
+            else addMessageToUI("bot", "જય શ્રી કૃષ્ણ! હું તૈયાર છું. (Model: 2.5 Flash)");
 
             if(!config.apiKey) showSettings();
         } else {
@@ -151,43 +152,43 @@
         }
     };
 
-    // --- MAIN CHAT LOGIC (WITH GOOGLE SEARCH) ---
+    // --- MAIN CHAT LOGIC ---
     async function sendMessage(img = null) {
         const input = document.getElementById('userInput');
         let text = input.value.trim();
         
         if (!text && !img && !currentFile) return;
 
-        // Check Local Commands
         if (checkLocalCommands(text)) { input.value = ''; return; }
 
-        // UI Update
         addMessageToUI('user', text, img || (currentFile?.type?.startsWith('image') ? currentFile.data : null));
         input.value = '';
 
-        // Prepare History Payload
-        const userParts = [{ text: text }];
+        const userParts = [];
+        if(text) userParts.push({ text: text });
         if(img) userParts.push({ inline_data: { mime_type: "image/jpeg", data: img } });
+        
         if(currentFile) {
-            if(currentFile.mime.startsWith('image/')) userParts.push({ inline_data: { mime_type: currentFile.mime, data: currentFile.data } });
-            else userParts.push({ text: `\n\n[FILE: ${currentFile.name}]\n${currentFile.data}\n` });
+            if(currentFile.mime.startsWith('image/')) {
+                userParts.push({ inline_data: { mime_type: currentFile.mime, data: currentFile.data } });
+            } else {
+                userParts.push({ text: `\n\n[ATTACHED FILE: ${currentFile.name}]\n${currentFile.data}\n` });
+            }
             currentFile = null;
         }
 
         config.history.push({ role: "user", parts: userParts });
 
-        // Show Typing with "Searching" hint
         const tmp = "t-" + Date.now();
         document.getElementById('chatBox').innerHTML += `<div class="message bot" id="${tmp}">Thinking...</div>`;
         scrollToBottom();
 
         try {
             const now = new Date();
-            const dynamicPrompt = `${config.systemPrompt} Current Time: ${now.toLocaleString()}.`;
-            
+            // System Instruction Injection for Strict Persona
             const payload = {
-                contents: [{ role: "user", parts: [{ text: dynamicPrompt }] }, ...config.history],
-                // GOOGLE SEARCH ENABLED
+                system_instruction: { parts: [{ text: `${config.systemPrompt} Current Time: ${now.toLocaleString()}.` }] },
+                contents: config.history,
                 tools: [{ google_search: {} }] 
             };
             
@@ -195,38 +196,37 @@
                 method: 'POST', headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(payload)
             });
+            
             const d = await r.json();
             
             if(d.error) throw new Error(d.error.message);
             
             let reply = d.candidates[0].content.parts[0].text;
             
-            // Check for Grounding (Search Sources)
             const grounding = d.candidates[0].groundingMetadata;
             if(grounding && grounding.searchEntryPoint) {
-                 reply += `\n\n🔍 ${grounding.searchEntryPoint.renderedContent}`;
+                 reply += `\n\n🔍 <a href="#" style="color:#aaa">Google Search Result</a>`;
             }
 
             document.getElementById(tmp).remove();
             addMessageToUI('bot', reply);
             
             config.history.push({ role: "model", parts: [{ text: reply }] });
-            localStorage.setItem('twinMeUltV4', JSON.stringify(config));
+            localStorage.setItem('twinMeFinalV5.1', JSON.stringify(config));
             
             speak(reply);
 
         } catch (e) { document.getElementById(tmp).innerText = "Error: " + e.message; }
     }
 
-    // --- UI RENDERING (CODE HIGHLIGHTING) ---
+    // --- UI RENDERING ---
     function addMessageToUI(role, text, img = null) {
         const box = document.getElementById('chatBox');
-        
-        // Basic Formatting (Bold, Code Blocks)
-        let formatted = text
-            .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>') // Code Blocks
-            .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>') // Bold
-            .replace(/\n/g, '<br>'); // Newlines
+        let formatted = text || "";
+        formatted = formatted
+            .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>') 
+            .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+            .replace(/\n/g, '<br>');
 
         let h = `<div class="message ${role}">${formatted}`;
         if(img) h += `<br><img src="data:image/jpeg;base64,${img}">`;
@@ -245,9 +245,9 @@
         const box = document.getElementById('chatBox');
         box.innerHTML = '';
         config.history.forEach(msg => {
-            if(msg.role === 'user' && msg.parts[0].text.includes("INSTRUCTIONS:")) return;
-            let text = msg.parts[0].text || "";
-            if(text.includes("[FILE:")) text = "[File Attached]";
+            let text = "";
+            if(msg.parts) { msg.parts.forEach(p => { if(p.text) text += p.text; }); }
+            if(text.includes("[ATTACHED FILE:")) text = "[File Uploaded]";
             addMessageToUI(msg.role === 'user' ? 'user' : 'bot', text);
         });
     }
@@ -258,7 +258,9 @@
         if (!file) return;
         const reader = new FileReader();
         reader.onload = function(e) {
-            currentFile = { name: file.name, data: e.target.result.split(',')[1] || e.target.result, mime: file.type };
+            let data = e.target.result;
+            if(file.type.startsWith('image/')) data = data.split(',')[1];
+            currentFile = { name: file.name, data: data, mime: file.type };
             document.getElementById('userInput').value = `[File: ${file.name}] attached.`;
         };
         if (file.type.startsWith('image/')) reader.readAsDataURL(file); else reader.readAsText(file);
@@ -277,12 +279,13 @@
 
     // --- VOICE & SETTINGS ---
     function clearMemory() {
-        if(confirm("Delete all history?")) {
-            config.history = []; localStorage.setItem('twinMeUltV4', JSON.stringify(config));
+        if(confirm("Delete history?")) {
+            config.history = []; localStorage.setItem('twinMeFinalV5.1', JSON.stringify(config));
             document.getElementById('chatBox').innerHTML = '';
         }
     }
     async function speak(text) {
+        if(!text) return;
         const clean = text.replace(/[*#`]/g, '').replace(/[\u{1F600}-\u{1F64F}]/gu, ""); 
         if (config.elevenKey) {
             try {
@@ -305,9 +308,10 @@
         config.apiKey = document.getElementById('geminiKey').value;
         config.elevenKey = document.getElementById('elevenKey').value;
         config.voiceId = document.getElementById('voiceId').value;
+        // Save selected model from dropdown
         config.model = document.getElementById('modelSelect').value;
         config.systemPrompt = document.getElementById('systemPrompt').value;
-        localStorage.setItem('twinMeUltV4', JSON.stringify(config));
+        localStorage.setItem('twinMeFinalV5.1', JSON.stringify(config));
         location.reload();
     }
 
